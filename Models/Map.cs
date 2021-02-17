@@ -8,9 +8,12 @@ namespace PB_JAW.Models
 {
     public class Map
     {
+
+        // building attribute
         [Required(ErrorMessage = "Please select a building.")]
         public string Building { get; set; }
 
+        // roomnumber attribute
         [Required(ErrorMessage = "Please select a room number.")]
         public string RoomNumber { get; set; }
     }

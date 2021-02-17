@@ -13,22 +13,27 @@ namespace PB_JAW.Models
         {
             this.host = host;
         }
-
+    
+        // code to find image corresponding to user input
         void FindImage()
         {
 
         }
 
+        // code to createmap using python package
         void CreateMap()
         {
 
         }
 
+        // calculate travel time between start and ending positions
         void TravelTime()
         {
 
         }
 
+
+        // calculate text directions for the user
         void Directions()
         {
 

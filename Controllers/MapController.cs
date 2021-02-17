@@ -12,9 +12,10 @@ namespace PB_JAW.Controllers
         private IWebHostEnvironment host;
         public MapController(IWebHostEnvironment host)
         {
-
             this.host = host;
         }
+
+        // using input fields create a new map template
         [HttpGet]
         public ViewResult Map(int? num)
         {
@@ -23,6 +24,7 @@ namespace PB_JAW.Controllers
             return View("Map", templateModel);
         }
 
+        // create/save map and return new view for the user to see
         [HttpPost]
         public ViewResult SaveMap(TemplateModelMap templateModel)
         {
