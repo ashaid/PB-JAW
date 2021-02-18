@@ -16,5 +16,10 @@ namespace PB_JAW.Models
         // roomnumber attribute
         [Required(ErrorMessage = "Please select a room number.")]
         public string RoomNumber { get; set; }
+    
+        //Skeleton for TemplateMapMode() method in Map Model Component
+        public void TemplateMapModel(){
+        
+        }
     }
 }

@@ -25,6 +25,7 @@ namespace PB_JAW.Controllers
         }
 
         // create/save map and return new view for the user to see
+        //TAKES PLACE OF CreateModel() method on Map Controller Component
         [HttpPost]
         public ViewResult SaveMap(TemplateModelMap templateModel)
         {
