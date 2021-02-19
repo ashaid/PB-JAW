@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using PB_JAW.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,22 @@ namespace PB_JAW.Controllers
 
         // using input fields create a new map template
         [HttpGet]
-        public ViewResult Map(int? num)
+        public ViewResult MapBuilder(int? numMaps)
         {
             TemplateModelMap templateModel = new TemplateModelMap();
 
-            return View("Map", templateModel);
+            while(numMaps > 0)
+            {
+                TemplateModelMap start = new TemplateModelMap();
+                templateModel.AddMap(start);
+                numMaps--;
+
+                TemplateModelMap destination = new TemplateModelMap();
+                templateModel.AddMap(destination);
+                numMaps--;
+            }
+
+            return View("MapBuilder", templateModel);
         }
 
         // create/save map and return new view for the user to see
@@ -35,7 +47,8 @@ namespace PB_JAW.Controllers
                 MapUtilities util = new MapUtilities(host);
                 try
                 {
-
+                    string fileName = util.CreateMap(templateModel.Maps);
+                    TempData["GenerateFile"] = fileName;
                 }
                 catch
                 {
