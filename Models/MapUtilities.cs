@@ -21,9 +21,9 @@ namespace PB_JAW.Models
         }
 
         // code to createmap using python package
-        void CreateMap()
+        public string CreateMap(List<TemplateModelMap> Maps)
         {
-
+            return "placeholder";
         }
 
         // calculate travel time between start and ending positions

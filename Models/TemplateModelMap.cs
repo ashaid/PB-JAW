@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 namespace PB_JAW.Models
 {
-    public class Map
+    public class TemplateModelMap
     {
 
         // building attribute
@@ -16,10 +16,17 @@ namespace PB_JAW.Models
         // roomnumber attribute
         [Required(ErrorMessage = "Please select a room number.")]
         public string RoomNumber { get; set; }
-    
-        //Skeleton for TemplateMapMode() method in Map Model Component
-        public void TemplateMapModel(){
-        
+
+        public TemplateModelMap()
+        {
+            Maps = new List<TemplateModelMap>();
+        }
+
+        public List<TemplateModelMap> Maps { get; set; }
+
+        public void AddMap(TemplateModelMap m)
+        {
+            Maps.Add(m);
         }
     }
 }

@@ -1,0 +1,69 @@
+﻿@model PB_JAW.Models.TemplateModelMap
+@{
+    ViewData["Title"] = "Map Builder";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Map Builder</h1>
+<div class="row">
+    <form asp-action="SaveMap">
+        <div asp-validation-summary="ModelOnly" class="text-danger">Select building and room number</div>
+        <div>
+            <p>Select building and room number for your starting location</p>
+        </div>
+        <div class="form-row">
+            @Html.DropDownListFor(
+                model => model.Maps[0].Building,
+                new SelectList(
+                    new List<Object>
+                    {
+                        new { value = 0, text = "Business Education Complex" },
+                        new { value = 1, text = "Patrick F. Taylor Hall" },
+                        new { value = 2, text = "Lockett" }
+                    },
+                    "value",
+                    "text",
+                    Model.Maps[0].Building
+            )
+           )
+
+            <span asp-validation-for="@Model.Maps[0].Building" class="text-danger"></span>
+
+            <div class="col-2">
+                <input asp-for="@Model.Maps[0].RoomNumber" class="form-control" placeholder="Room Number" />
+                <span asp-validation-for="@Model.Maps[0].RoomNumber" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div>
+                <p>Select building and room number for your ending location</p>
+            </div>
+            @Html.DropDownListFor(
+                model => model.Maps[1].Building,
+                new SelectList(
+                    new List<Object>
+                    {
+                        new { value = 0, text = "Business Education Complex" },
+                        new { value = 1, text = "Patrick F. Taylor Hall" },
+                        new { value = 2, text = "Lockett" }
+                    },
+                    "value",
+                    "text",
+                    Model.Maps[1].Building
+            )
+           )
+
+            <span asp-validation-for="@Model.Maps[1].Building" class="text-danger"></span>
+
+            <div class="col-2">
+                <input asp-for="@Model.Maps[1].RoomNumber" class="form-control" placeholder="Room Number" />
+                <span asp-validation-for="@Model.Maps[1].RoomNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <input type="submit" value="CREATE" class="btn-lg" />
+        </div>
+    </form>
+</div>
+
