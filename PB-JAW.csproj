@@ -5,4 +5,14 @@
     <RootNamespace>PB_JAW</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\template\BEC.jpeg" />
+    <Content Remove="wwwroot\template\PFT-1.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\template\BEC.jpeg" />
+    <None Include="wwwroot\template\PFT-1.jpeg" />
+  </ItemGroup>
+
 </Project>

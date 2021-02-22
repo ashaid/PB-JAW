@@ -50,7 +50,7 @@ namespace PB_JAW.Models
 
             else if(name == "Patrick F. Taylor Hall")
             {
-                templateName = "/wwwroot/template/PFT.jpeg";
+                templateName = "/wwwroot/template/PFT-1.jpeg";
             }
             else if (name == "Lockett Hall")
             {
