@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
 import sys
+import os
 
 
 # open image
@@ -13,20 +14,25 @@ def save_image(image, path):
     image.save(path, "JPEG")
 
 
-if __name__ == '__main__':
-    # im = open_image("bec-map.jpeg")
-
-    # box = (135, 188, 339, 306)
-    # region = im.crop(box)
-
-    with Image.open("bec-map.jpeg") as im:
+# highlights correct area
+def highlight_image(file):
+    with Image.open(file) as im:
         draw = ImageDraw.Draw(im, 'RGBA')
-        # draw.line((135, 188) + (339, 188), fill=255, width=5)
         draw.rectangle([(135, 188), (339, 306)], (255, 0, 0, 85))
-        # draw.line((0, im.size[1], im.size[0], 0), fill=128)
         del draw
 
     save_image(im, "edited.jpeg")
+    path = os.path.abspath("edited.jpeg")
+    print(f"\t* Saved new file at {path} *")
 
-    # im.show()
-    # im.save(sys.stdout, "PNG")
+
+def main(file):
+    print("\t**********************************************")
+    print("\t**** Greeter - STARTED PYTHON FILE CALL. *****")
+    print("\t**********************************************")
+
+    highlight_image(file)
+
+
+if __name__ == '__main__':
+    globals()[sys.argv[1]](sys.argv[2])
