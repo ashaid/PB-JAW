@@ -19,7 +19,7 @@ namespace PB_JAW.Models
         {
 
         }
-        string FindBuilding(string BuildingNumber)
+        public string FindBuilding(string BuildingNumber)
         {
             string s = "";
 
@@ -61,12 +61,12 @@ namespace PB_JAW.Models
         }
 
         // code to createmap using python package
-        public string CreateMap(List<TemplateModelMap> Maps)
+        public string CreateMap(List<MapModel> Maps)
         {
             // create initial map
             string buildingName = FindBuilding(Maps[0].Building);
 
-            string name = FindBuilding(Maps[0].Building) + "_" + Maps[0].RoomNumber.ToString() + ".jpeg";
+            string name = buildingName + "_" + Maps[0].RoomNumber.ToString() + ".jpeg";
             string path = host.ContentRootFileProvider.GetFileInfo(FindMapTemplate(buildingName)).PhysicalPath;
 
 

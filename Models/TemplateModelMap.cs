@@ -10,21 +10,15 @@ namespace PB_JAW.Models
     {
 
         // building attribute
-        [Required(ErrorMessage = "Please select a building.")]
-        public string Building { get; set; }
 
-        // roomnumber attribute
-        [Required(ErrorMessage = "Please select a room number.")]
-        public string RoomNumber { get; set; }
-
-        public TemplateModelMap()
+        public TemplateModelMap() 
         {
-            Maps = new List<TemplateModelMap>();
+            Maps = new List<MapModel>();
         }
 
-        public List<TemplateModelMap> Maps { get; set; }
+        public List<MapModel> Maps { get; set; }
 
-        public void AddMap(TemplateModelMap m)
+        public void AddMap(MapModel m)
         {
             Maps.Add(m);
         }

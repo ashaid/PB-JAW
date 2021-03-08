@@ -1,5 +1,16 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model PB_JAW.Models.TemplateModelMap
 @{
+    ViewData["Title"] = "Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<h1>Results:</h1>
+Starting Map
+@TempData["BuildingName0"].ToString()
+@Model.Maps[0].RoomNumber
+
+Destination Map
+@TempData["BuildingName1"].ToString()
+@Model.Maps[1].RoomNumber
+
+
