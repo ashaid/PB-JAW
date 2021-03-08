@@ -22,16 +22,15 @@ namespace PB_JAW.Controllers
         {
             TemplateModelMap templateModel = new TemplateModelMap();
 
-            while(numMaps > 0)
-            {
-                TemplateModelMap start = new TemplateModelMap();
-                templateModel.AddMap(start);
-                numMaps--;
+            // create first map
+            MapModel start = new MapModel();
+            templateModel.AddMap(start);
+            numMaps--;
 
-                TemplateModelMap destination = new TemplateModelMap();
-                templateModel.AddMap(destination);
-                numMaps--;
-            }
+            MapModel destination = new MapModel();
+            templateModel.AddMap(destination);
+            numMaps--;
+            
 
             return View("MapBuilder", templateModel);
         }
@@ -48,18 +47,20 @@ namespace PB_JAW.Controllers
                 try
                 {
                     string fileName = util.CreateMap(templateModel.Maps);
-                    TempData["GenerateFile"] = fileName;
+                    //TempData["GenerateFile"] = fileName;
+                    TempData["BuildingName0"] = util.FindBuilding(templateModel.Maps[0].Building);
+                    TempData["BuildingName1"] = util.FindBuilding(templateModel.Maps[1].Building);
                 }
                 catch
                 {
 
                 }
-                return View("Results");
+                return View("Result", templateModel);
             }
             else
             {
                 ModelState.AddModelError("", "Please correct the highlighted error below.");
-                return View("Map", templateModel);
+                return View("MapBuilder", templateModel);
             }
         }
     }
