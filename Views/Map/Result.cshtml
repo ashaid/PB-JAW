@@ -5,12 +5,15 @@
 }
 
 <h1>Results:</h1>
-Starting Map
-@TempData["BuildingName0"].ToString()
-@Model.Maps[0].RoomNumber
+<div role="map 1">
+    Starting Map
+    @TempData["BuildingName0"].ToString()
+    @Model.Maps[0].RoomNumber
+</div>
 
-Destination Map
-@TempData["BuildingName1"].ToString()
-@Model.Maps[1].RoomNumber
-
+<div role="map 2">
+    Destination Map
+    @TempData["BuildingName1"].ToString()
+    @Model.Maps[1].RoomNumber
+</div>
 
