@@ -38,7 +38,7 @@ namespace PB_JAW.Controllers
         // create/save map and return new view for the user to see
         //TAKES PLACE OF CreateModel() method on Map Controller Component
         [HttpPost]
-        public ViewResult SaveMap(TemplateModelMap templateModel)
+        public async Task<ViewResult> SaveMapAsync(TemplateModelMap templateModel)
         {
             if(ModelState.IsValid)
             {
@@ -46,8 +46,12 @@ namespace PB_JAW.Controllers
                 MapUtilities util = new MapUtilities(host);
                 try
                 {
-                    string fileName = util.CreateMap(templateModel.Maps);
-                    //TempData["GenerateFile"] = fileName;
+                    List<string> fileNames = new List<string>();
+                    fileNames = await util.CreateMap(templateModel.Maps);
+
+                    TempData["Map0"] = fileNames[0];
+                    TempData["Map1"] = fileNames[1];
+
                     TempData["BuildingName0"] = util.FindBuilding(templateModel.Maps[0].Building);
                     TempData["BuildingName1"] = util.FindBuilding(templateModel.Maps[1].Building);
                 }
