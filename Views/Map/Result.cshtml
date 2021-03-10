@@ -7,13 +7,11 @@
 <h1>Results:</h1>
 <div label="map-1">
     Starting Map
-    @TempData["BuildingName0"].ToString()
-    @Model.Maps[0].RoomNumber
+    <img class="fluid" src="@Url.Content("~/created/" + @TempData["Map0"])" alt="map 1" />
+    
 </div>
 
 <div label="map-2">
     Destination Map
-    @TempData["BuildingName1"].ToString()
-    @Model.Maps[1].RoomNumber
 </div>
 
