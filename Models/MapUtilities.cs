@@ -142,28 +142,36 @@ namespace PB_JAW.Models
         }
 
         // code to createmap using python package
-        public async Task<string> CreateMap(List<MapModel> Maps)
+        public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
-            IntPtr gs = await StartPython();
+            List<string> names = new List<string>();
+            for (int i = 0; i < Maps.Count; i++)
+            {
+                IntPtr gs = await StartPython();
 
-            // create initial map
-            string buildingName = FindBuilding(Maps[0].Building);
-            string dictionary = FindBuildingDictionary(buildingName);
-            string roomNumber = Maps[0].RoomNumber.ToString();
+                // create initial map
+                string buildingName = FindBuilding(Maps[i].Building);
+                string dictionary = FindBuildingDictionary(buildingName);
+                string roomNumber = Maps[i].RoomNumber.ToString();
 
-            string templatePath = FindMapTemplate(buildingName);
+                string templatePath = FindMapTemplate(buildingName);
 
-            // name of new file
-            string name = buildingName + "_" + roomNumber + ".jpeg";
+                // name of new file
+                string name = buildingName + "_" + roomNumber + ".jpeg";
 
-            // path of template
-            string path = host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath;
+                // path of template
+                string path = host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath;
 
 
-            CreateImage(templatePath, dictionary, roomNumber, name, gs);
+                CreateImage(templatePath, dictionary, roomNumber, name, gs);
+
+                names.Add(name);
+            }
             
-            return name;
+            return names;
         }
+
+        
 
 
         // calculate travel time between start and ending positions

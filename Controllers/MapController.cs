@@ -46,8 +46,12 @@ namespace PB_JAW.Controllers
                 MapUtilities util = new MapUtilities(host);
                 try
                 {
-                    string fileName = await util.CreateMap(templateModel.Maps);
-                    TempData["Map0"] = fileName;
+                    List<string> fileNames = new List<string>();
+                    fileNames = await util.CreateMap(templateModel.Maps);
+
+                    TempData["Map0"] = fileNames[0];
+                    TempData["Map1"] = fileNames[1];
+
                     TempData["BuildingName0"] = util.FindBuilding(templateModel.Maps[0].Building);
                     TempData["BuildingName1"] = util.FindBuilding(templateModel.Maps[1].Building);
                 }
