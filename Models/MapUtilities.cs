@@ -81,13 +81,13 @@ namespace PB_JAW.Models
             switch (BuildingNumber)
             {
                 case "Business Education Complex":
-                    s = "BEC";
+                    s = "bec";
                     break;
                 case "Patrick F. Taylor Hall":
-                    s = "PFT";
+                    s = "pft";
                     break;
                 case "Lockett Hall":
-                    s = "Loc";
+                    s = "loc";
                     break;
             }
             return s;
