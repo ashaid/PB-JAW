@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Python.Included" Version="3.7.3.13" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
   </ItemGroup>
 
   <ItemGroup>

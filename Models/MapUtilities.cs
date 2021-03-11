@@ -11,7 +11,7 @@ namespace PB_JAW.Models
 {
     public class MapUtilities
     {
-        private IWebHostEnvironment host;
+        private readonly IWebHostEnvironment host;
         public MapUtilities(IWebHostEnvironment host)
         {
             this.host = host;
@@ -19,12 +19,10 @@ namespace PB_JAW.Models
 
         static async Task<IntPtr> StartPython()
         {
-
             Installer.InstallPath = Path.GetFullPath(".");
             Installer.LogMessage += Console.WriteLine;
             await Installer.SetupPython();
 
-            
             // initial setup
             if (PythonEngine.IsInitialized == false)
             {
@@ -33,53 +31,47 @@ namespace PB_JAW.Models
                 PythonEngine.Initialize();
                 PythonEngine.BeginAllowThreads();
             }
+
             IntPtr gs = PythonEngine.AcquireLock();
+
             try
             {
                 dynamic os = PythonEngine.ImportModule("os");
                 Console.WriteLine("### Current working directory:\n\t" + os.getcwd());
                 Console.WriteLine("### PythonPath:\n\t" + PythonEngine.PythonPath);
 
-                    // pillow version
+                // pillow version
                 dynamic pillow = Py.Import("PIL");
                 Console.WriteLine("Pillow version: " + pillow.__version__);
-                
             }
-
             catch (PythonException pe)
             {
                 Console.WriteLine(pe);
             }
-            
-             return gs;
-            
-            
+
+            return gs;
         }
         // code to find image corresponding to user input
         void CreateImage(string templatePath, string dictionary, string roomNumber, string name, IntPtr gs)
         {
+            // string cleaning
+            string path = "/python/";
+            path = host.ContentRootFileProvider.GetFileInfo(path).PhysicalPath;
+            path = path.Replace('\\', '/');
 
-                // string cleaning
-                string path = "/python/";
-                path = host.ContentRootFileProvider.GetFileInfo(path).PhysicalPath;
-                path = path.Replace('\\', '/');
+            // set PYTHON global variable to look for script
+            int returnValue = PythonEngine.RunSimpleString($"import sys;sys.path.insert(1, '{path}');");
+            if (returnValue != 0)
+            {
+                //throw exception or other failure handling
+                Console.WriteLine("!!!!!! incorrect PATH setting !!!!!!!!!!!!");
+            }
 
-                // set PYTHON global variable to look for script
-                int returnValue = PythonEngine.RunSimpleString($"import sys;sys.path.insert(1, '{path}');");
-                if (returnValue != 0)
-                {
-                    //throw exception or other failure handling
-                    Console.WriteLine("!!!!!! incorrect PATH setting !!!!!!!!!!!!");
-                }
-
-                // import main.py to run
-                dynamic mod = Py.Import("main");
-                // call main with [map].jpeg, [dict], [room number] [name of new image]
-                mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, roomNumber, name);
-                PythonEngine.ReleaseLock(gs);
-            
-            
-
+            // import main.py to run
+            dynamic mod = Py.Import("main");
+            // call main with [map].jpeg, [dict], [room number] [name of new image]
+            mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, roomNumber, name);
+            PythonEngine.ReleaseLock(gs);
         }
 
         public string FindBuildingDictionary(string BuildingNumber)
@@ -104,7 +96,7 @@ namespace PB_JAW.Models
         {
             string s = "";
 
-            switch(BuildingNumber)
+            switch (BuildingNumber)
             {
                 case "0":
                     s = "Business Education Complex";
@@ -116,20 +108,18 @@ namespace PB_JAW.Models
                     s = "Lockett Hall";
                     break;
             }
-
             return s;
-            
         }
 
-        public string FindMapTemplate(string name) 
+        public string FindMapTemplate(string name)
         {
             string templateName = "";
-            if(name == "Business Education Complex")
+            if (name == "Business Education Complex")
             {
                 templateName = "/wwwroot/template/BEC.jpeg";
             }
 
-            else if(name == "Patrick F. Taylor Hall")
+            else if (name == "Patrick F. Taylor Hall")
             {
                 templateName = "/wwwroot/template/PFT-1.jpeg";
             }
@@ -145,8 +135,11 @@ namespace PB_JAW.Models
         public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
             List<string> names = new List<string>();
+
+            // for each map in list 
             for (int i = 0; i < Maps.Count; i++)
             {
+                // python memory store
                 IntPtr gs = await StartPython();
 
                 // create initial map
@@ -159,19 +152,12 @@ namespace PB_JAW.Models
                 // name of new file
                 string name = buildingName + "_" + roomNumber + ".jpeg";
 
-                // path of template
-                string path = host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath;
-
-
                 CreateImage(templatePath, dictionary, roomNumber, name, gs);
 
                 names.Add(name);
             }
-            
             return names;
         }
-
-        
 
 
         // calculate travel time between start and ending positions
