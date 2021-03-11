@@ -1,5 +1,8 @@
 from PIL import Image, ImageDraw
 import sys
+import os
+from pixels import bec_dict, pft_dict
+import pathlib
 
 
 # open image
@@ -13,20 +16,55 @@ def save_image(image, path):
     image.save(path, "JPEG")
 
 
-if __name__ == '__main__':
-    # im = open_image("bec-map.jpeg")
+def find_dict(building_dict):
+    if building_dict == "bec":
+        building_dict = bec_dict
+    elif building_dict == "pft":
+        building_dict = pft_dict
 
-    # box = (135, 188, 339, 306)
-    # region = im.crop(box)
+    return building_dict;
 
-    with Image.open("bec-map.jpeg") as im:
+
+# highlights correct area
+def highlight_image(file, building_dict, room_number, name):
+    # grab correct dictionary
+    building_dict = find_dict(building_dict)
+
+    room_number = str(room_number)
+
+    # open image file
+    with Image.open(file) as im:
         draw = ImageDraw.Draw(im, 'RGBA')
-        # draw.line((135, 188) + (339, 188), fill=255, width=5)
-        draw.rectangle([(135, 188), (339, 306)], (255, 0, 0, 85))
-        # draw.line((0, im.size[1], im.size[0], 0), fill=128)
+        draw.rectangle([(building_dict[room_number][0], building_dict[room_number][1]),
+                        (building_dict[room_number][2], building_dict[room_number][3])], (255, 0, 0, 95))
+        draw.text((25, 74), room_number, fill='black', font=ImageDraw.getfont())
         del draw
 
-    save_image(im, "edited.jpeg")
+    cd = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\created\\{name}"
 
-    # im.show()
-    # im.save(sys.stdout, "PNG")
+    try:
+        save_image(im, cd)
+    except Exception as err:
+        print(format(err))
+
+    print(f"\t* Saved new file at {cd} *")
+
+
+def main(file, building_dict, room_number, name):
+    print("\t**********************************************")
+    print("\t**** Greeter - STARTED PYTHON FILE CALL. *****")
+    print("\t**********************************************")
+
+    highlight_image(file, building_dict, room_number, name)
+
+
+if __name__ == '__main__':
+
+    # CALLING THIS FILE INSTRUCTIONS:
+    # python main.py main file building_dict room_number
+    # python main.py main bec-map.jpeg bec 1620
+
+    # main(), main, building_dict, room_number name_of_new_image
+    globals()[sys.argv[1]](sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+
+    # main("bec-map.jpeg", "bec", "1620")

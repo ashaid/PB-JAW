@@ -1,8 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>PB_JAW</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\template\BEC.jpeg" />
+    <Content Remove="wwwroot\template\PFT-1.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\template\BEC.jpeg" />
+    <None Include="wwwroot\template\PFT-1.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Python.Included" Version="3.7.3.13" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\created\" />
+  </ItemGroup>
 
 </Project>
