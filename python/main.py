@@ -36,7 +36,8 @@ def highlight_image(file, building_dict, room_number, name):
     with Image.open(file) as im:
         draw = ImageDraw.Draw(im, 'RGBA')
         draw.rectangle([(building_dict[room_number][0], building_dict[room_number][1]),
-                        (building_dict[room_number][2], building_dict[room_number][3])], (255, 0, 0, 85))
+                        (building_dict[room_number][2], building_dict[room_number][3])], (255, 0, 0, 95))
+        draw.text((25, 74), room_number, fill='black', font=ImageDraw.getfont())
         del draw
 
     cd = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\created\\{name}"
