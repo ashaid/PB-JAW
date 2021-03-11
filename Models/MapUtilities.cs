@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Python.Included;
 using Python.Runtime;
 using System.IO;
+using System.Data.SQLite;
 
 namespace PB_JAW.Models
 {
@@ -48,7 +49,6 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine(pe);
             }
-
             return gs;
         }
         // code to find image corresponding to user input
@@ -81,13 +81,13 @@ namespace PB_JAW.Models
             switch (BuildingNumber)
             {
                 case "Business Education Complex":
-                    s = "bec";
+                    s = "BEC";
                     break;
                 case "Patrick F. Taylor Hall":
-                    s = "pft";
+                    s = "PFT";
                     break;
                 case "Lockett Hall":
-                    s = "loc";
+                    s = "Loc";
                     break;
             }
             return s;
@@ -159,6 +159,21 @@ namespace PB_JAW.Models
             return names;
         }
 
+        SQLiteConnection connect() 
+        {
+            SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
+            try
+            {
+                sqlCon.Open();
+                Console.WriteLine("Connection is established");
+            }
+            catch
+            {
+                Console.WriteLine("Connection not established");
+            }
+            return sqlCon;
+        }
+
 
         // calculate travel time between start and ending positions
         void TravelTime()
@@ -170,6 +185,7 @@ namespace PB_JAW.Models
         // calculate text directions for the user
         void Directions()
         {
+            connect();
 
         }
     }
