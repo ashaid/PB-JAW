@@ -159,7 +159,7 @@ namespace PB_JAW.Models
             return names;
         }
 
-        SQLiteConnection connect() 
+        SQLiteConnection Connect() 
         {
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
@@ -185,7 +185,7 @@ namespace PB_JAW.Models
         // calculate text directions for the user
         void Directions()
         {
-            connect();
+            Connect();
 
         }
     }
