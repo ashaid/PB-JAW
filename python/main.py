@@ -28,22 +28,38 @@ def find_dict(building_dict):
 # highlights correct area
 def highlight_image(file, building_dict, room_number, name):
     font_path = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\css\\Font\\TIMES.TTF"
-    # grab correct dictionary
+    # grab correct dictionary and room number
     building_dict = find_dict(building_dict)
-
     room_number = str(room_number)
+
+    # variables for watermark
+    water_mark = "PB-JAW"
+    font_size = 100
+    margin = 5
 
     # open image file
     with Image.open(file) as im:
-        font_size = 100
+        font = ImageFont.truetype(font_path, font_size)
+        # draw rectangle
         draw = ImageDraw.Draw(im, 'RGBA')
         draw.rectangle([(building_dict[room_number][0], building_dict[room_number][1]),
                         (building_dict[room_number][2], building_dict[room_number][3])], (255, 0, 0, 95))
-        font = ImageFont.truetype(font_path, font_size)
-        # draw text, xy pixels, text, fill color, font
+
+        # draw text, xy pixels, text, fill color, font (drawing room number on image)
         draw.text((25, 74), "Room:" + room_number, fill='black', font=font)
+
+        # calculate x,y coordinates of text
+        width, height = im.size
+        # print(width + " " + height)
+        text_width, text_height = draw.textsize(water_mark, font)
+        x = width - text_width - margin
+        y = height - text_height - margin
+        # draw watermark
+        draw.text((x, y), water_mark, font=font, fill='black')
+
         del draw
 
+    # grabs path to created image
     cd = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\created\\{name}"
 
     try:
