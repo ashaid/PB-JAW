@@ -131,7 +131,7 @@ namespace PB_JAW.Models
             return templateName;
         }
 
-        // code to createmap using python package
+        // code to create map
         public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
             List<string> names = new List<string>();
@@ -178,7 +178,9 @@ namespace PB_JAW.Models
         // calculate travel time between start and ending positions
         void TravelTime()
         {
-
+            // grab current time
+            // grab source destination and end destination
+            // dynamically calulcate time using sql and priorty queue
         }
 
 
