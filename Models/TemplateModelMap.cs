@@ -22,5 +22,7 @@ namespace PB_JAW.Models
         {
             Maps.Add(m);
         }
+
+        public bool ButtonClicked { get; set; }
     }
 }
