@@ -11,6 +11,7 @@ namespace PB_JAW.Controllers
     public class MapController : Controller
     {
         private IWebHostEnvironment host;
+
         public MapController(IWebHostEnvironment host)
         {
             this.host = host;
@@ -47,6 +48,7 @@ namespace PB_JAW.Controllers
                 MapUtilities util = new MapUtilities(host);
                 try
                 {
+                    Console.WriteLine(templateModel.ButtonClicked);
                     List<string> fileNames = new List<string>();
                     fileNames = await util.CreateMap(templateModel.Maps);
 
