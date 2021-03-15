@@ -27,10 +27,11 @@ namespace PB_JAW.Controllers
             templateModel.AddMap(start);
             numMaps--;
 
+
             MapModel destination = new MapModel();
             templateModel.AddMap(destination);
             numMaps--;
-            
+
 
             return View("MapBuilder", templateModel);
         }
@@ -40,7 +41,7 @@ namespace PB_JAW.Controllers
         [HttpPost]
         public async Task<ViewResult> SaveMapAsync(TemplateModelMap templateModel)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 // code to generate template map
                 MapUtilities util = new MapUtilities(host);
@@ -57,7 +58,7 @@ namespace PB_JAW.Controllers
                 }
                 catch
                 {
-
+                    Console.WriteLine("something went wrong");
                 }
                 return View("Result", templateModel);
             }
@@ -67,5 +68,7 @@ namespace PB_JAW.Controllers
                 return View("MapBuilder", templateModel);
             }
         }
+
+
     }
 }
