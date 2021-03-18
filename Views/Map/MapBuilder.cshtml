@@ -1,43 +1,37 @@
-﻿@{
+﻿@model PB_JAW.Models.TemplateModelMap
+@{
     ViewData["Title"] = "Map Builder";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model PB_JAW.Models.TemplateModelMap
 
-<div class="align-content-lg-center">
-    <h1>Map Builder</h1>
-    <button class="btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" id="Button" onclick="ButtonClick">
-        Enable/Disable Starting Destination
-    </button>
-</div>
+
+<h1>Map Builder</h1>
 Select Building and Enter Room Number
 <div class="align-content-lg-center">
     <form asp-action="SaveMap">
-        <div class="collapse" id="collapseExample">
-            <div>
-
-                <div class="form-row">
-                    @Html.DropDownListFor(
-                    model => model.Maps[0].Building,
-                    new SelectList(
-                    new List<Object>
-                    {
-                    new { value = 0, text = "Business Education Complex" },
-                    new { value = 1, text = "Patrick F. Taylor Hall" },
-                    new { value = 2, text = "Lockett" }
-                    },
-                    "value",
-                    "text",
-                    Model.Maps[0].Building
-                    )
-                    )
-                    <!----- <span asp-validation-for=" Model.Maps[0].Building" class="text-danger"></span> --->
-                    <div class="col">
-                        <input asp-for="@Model.Maps[0].RoomNumber" class="form-control" placeholder="Room Number" />
-                    </div>
-                    <span asp-validation-for="@Model.Maps[0].RoomNumber" class="text-danger"></span>
-                </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            @Html.DropDownListFor(
+            model => model.Maps[0].Building,
+            new SelectList(
+            new List<Object>
+            {
+            new { value = -2, text = "-----"},
+            new { value = -1, text = "No Starting Destination"},
+            new { value = 0, text = "Business Education Complex" },
+            new { value = 1, text = "Patrick F. Taylor Hall" },
+            new { value = 2, text = "Lockett" }
+            },
+            "value",
+            "text",
+            Model.Maps[0].Building
+            )
+            )
+            <span asp-validation-for=" @Model.Maps[0].Building" class="text-danger"></span>
+            <div class="col">
+                <input asp-for="@Model.Maps[0].RoomNumber" class="form-control" placeholder="Room Number" />
             </div>
+            <span asp-validation-for="@Model.Maps[0].RoomNumber" class="text-danger"></span>
         </div>
 
         <div class="form-row">
@@ -47,6 +41,7 @@ Select Building and Enter Room Number
             new SelectList(
             new List<Object>
             {
+            new { value = -2, text = "-----"},
             new { value = 0, text = "Business Education Complex" },
             new { value = 1, text = "Patrick F. Taylor Hall" },
             new { value = 2, text = "Lockett" }
@@ -56,7 +51,7 @@ Select Building and Enter Room Number
             Model.Maps[1].Building
             )
             )
-            <!----- <span asp-validation-for="@Model.Maps[1].Building" class="text-danger"></span> --->
+            <span asp-validation-for="@Model.Maps[1].Building" class="text-danger"></span>
             <div class="col">
                 <input asp-for="@Model.Maps[1].RoomNumber" class="form-control" placeholder="Room Number" />
             </div>

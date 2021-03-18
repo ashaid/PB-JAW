@@ -14,6 +14,14 @@ namespace PB_JAW.Models
 
         // roomnumber attribute
         [Required(ErrorMessage = "Please select a room number.")]
-        public string RoomNumber { get; set; }
+        public int RoomNumber { get; set; }
+
+        public void CheckStart(string Building)
+        {
+            if (Building.Contains("-1"))
+            {
+                RoomNumber = -1;
+            }
+        }
     }
 }
