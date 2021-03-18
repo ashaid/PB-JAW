@@ -135,26 +135,34 @@ namespace PB_JAW.Models
         public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
             List<string> names = new List<string>();
-
             // for each map in list 
             for (int i = 0; i < Maps.Count; i++)
             {
-                // python memory store
-                IntPtr gs = await StartPython();
+                // no starting destination
+                if(Maps[i].Building.Contains("-1"))
+                {
+                    names.Add("No starting location selected");
+                }
+                else
+                {
+                    // python memory store
+                    IntPtr gs = await StartPython();
 
-                // create initial map
-                string buildingName = FindBuilding(Maps[i].Building);
-                string dictionary = FindBuildingDictionary(buildingName);
-                string roomNumber = Maps[i].RoomNumber.ToString();
+                    // create initial map
+                    string buildingName = FindBuilding(Maps[i].Building);
+                    string dictionary = FindBuildingDictionary(buildingName);
+                    string roomNumber = Maps[i].RoomNumber.ToString();
 
-                string templatePath = FindMapTemplate(buildingName);
+                    string templatePath = FindMapTemplate(buildingName);
 
-                // name of new file
-                string name = buildingName + "_" + roomNumber + ".jpeg";
+                    // name of new file
+                    string name = buildingName + "_" + roomNumber + ".jpeg";
 
-                CreateImage(templatePath, dictionary, roomNumber, name, gs);
+                    CreateImage(templatePath, dictionary, roomNumber, name, gs);
 
-                names.Add(name);
+                    names.Add(name);
+                }
+
             }
             return names;
         }
