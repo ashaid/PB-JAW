@@ -174,6 +174,58 @@ namespace PB_JAW.Models
             return sqlCon;
         }
 
+        public string dirQuery(int roomNum, string building){
+            string direction;
+
+            switch(building){
+            
+                case building = "bec":
+                  //  direction = "SELECT * FROM BEC ExtToPFT %s", roomNum;
+                    break;
+
+                case building = "pft":
+                    
+                    break;
+
+                case building = "loc":
+                   
+                    break;
+
+                default:
+                    printf("Room Not Found, Cannot Perform Query");
+                    break;
+            
+            
+                    return direction;
+            }
+
+
+        }
+        
+        public string timeQuery(int roomNum, string building){
+            string time2exit;
+        
+            switch(building){
+            
+                case building = "bec":
+                    break;
+
+                case building = "pft":
+             
+                    break;
+
+                case building = "loc":
+            
+                    break;
+
+                default:
+                    printf("Room Not Found, Cannot Perform Query");
+                    break;
+            
+            
+                    return time2exit;
+
+        }
 
         // calculate travel time between start and ending positions
         void TravelTime()
@@ -181,6 +233,85 @@ namespace PB_JAW.Models
             // grab current time
             // grab source destination and end destination
             // dynamically calulcate time using sql and priorty queue
+
+            int totalTime;
+
+           switch(a.building){
+            
+                case a.building = "BEC":
+                    if(b.building == "PFT") //from BEC to PFT
+                    {
+                        totalTime = a.time2exit + b.time2exit + PFT2BEC;
+                    }
+                    else if (b.building == "Loc") //from BEC to Lockett
+                    {
+                        totalTime = a.time2exit + b.time2exit + BEC2Loc;
+                    }
+                    else if (b.building == "BEC") //from BEC to BEC
+                    {
+                        totalTime = 0; //within the same building. Throw catch for output saying "in the same building. ETA < 3 minutes or something
+                    }
+                    else{//throw error
+                    }
+                    break;
+
+                case a.building = "PFT":
+                    if(b.building == "PFT") //from BEC to PFT
+                    {
+                        totalTime = 0 //within the same building. Throw catch for output saying "in the same building. ETA < 3 minutes or something
+                    }
+                    else if (b.building == "Loc") //from BEC to Lockett
+                    {
+                        totalTime = a.time2exit + b.time2exit + PFT2Loc;
+                    }
+                    else if (b.building == "BEC") //from BEC to BEC
+                    {
+                        totalTime = a.time2exit + b.time2exit + PFT2BEC; 
+                    }
+                    else{//throw error
+                    }
+                    break;
+
+                case a.building = "Loc":
+                    if(b.building == "PFT") //from BEC to PFT
+                    {
+                        totalTime = a.time2exit + b.time2exit + PFT2Loc;
+                    }
+                    else if (b.building == "Loc") //from BEC to Lockett
+                    {
+                        totalTime = 0; //within same building. throw catch
+                    }
+                    else if (b.building == "BEC") //from BEC to BEC
+                    {
+                        totalTime = a.time2exit + b.time2exit + BEC2Loc;
+                    }
+                    else{//throw error
+                    }
+                    break;
+
+                case b.building = null: //source room null means user is approaching from off of campus
+                    if(a.building == "PFT"){
+                    // printf("You are arriving from off of campus to Patrick F. Taylor Hall. Unexpected ETA. \n");
+                    totalTime = 0;
+                    }
+                    else if(a.building == "Loc"){
+                    // printf("You are arriving from off of campus to Lockett Hall. Unexpected ETA. \n");
+                    totalTime = 0;
+                    }
+                    else if(a.building == "BEC"){
+                    // printf("You are arriving from off of campus to the Business Education Complex. Unexpected ETA. \n");
+                    totalTime = 0;
+                    }
+                    else{
+                    //thow error
+                    }
+
+                default: //throw error
+                    totalTime = 0;
+                    break;
+
+                    return totalTime;
+
         }
 
 
