@@ -15,7 +15,15 @@
 <div class="col">
     <div label="map-1" class="col=1">
         Starting Map
-        <img class="img-fluid" src="@Url.Content("~/created/" + @TempData["Map0"])" alt="map 1" />
+        @if (TempData["Map0"].ToString() != "No starting location selected")
+        {
+            <img class="img-fluid" src="@Url.Content("~/created/" + @TempData["Map0"])" alt="map 1" />
+        }
+        else
+        {
+            <p>No starting location selected</p>
+        }
+
     </div>
 
     Destination Map

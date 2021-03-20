@@ -23,6 +23,7 @@ namespace PB_JAW.Controllers
             return View();
         }
 
+
         public IActionResult Privacy()
         {
             return View();

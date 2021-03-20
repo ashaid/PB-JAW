@@ -14,6 +14,6 @@ namespace PB_JAW.Models
 
         // roomnumber attribute
         [Required(ErrorMessage = "Please select a room number.")]
-        public string RoomNumber { get; set; }
+        public int RoomNumber { get; set; }
     }
 }

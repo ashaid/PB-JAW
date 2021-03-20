@@ -12,6 +12,7 @@ namespace PB_JAW.Controllers
     public class MapController : Controller
     {
         private IWebHostEnvironment host;
+
         public MapController(IWebHostEnvironment host)
         {
             this.host = host;
@@ -42,12 +43,20 @@ namespace PB_JAW.Controllers
         [HttpPost]
         public async Task<ViewResult> SaveMapAsync(TemplateModelMap templateModel)
         {
+            if(templateModel.Maps[0].Building.Contains("-2") ||  templateModel.Maps[1].Building.Contains("-2"))
+            {
+                ModelState.AddModelError("", "Please select a building");
+            }
+
+            //templateModel.Maps[0].CheckStart(templateModel.Maps[0].Building);
+            
             if (ModelState.IsValid)
             {
                 // code to generate template map
                 MapUtilities util = new MapUtilities(host);
                 try
                 {
+                    Console.WriteLine(templateModel.ButtonClicked);
                     List<string> fileNames = new List<string>();
                     fileNames = await util.CreateMap(templateModel.Maps);
 
@@ -65,12 +74,10 @@ namespace PB_JAW.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "Please correct the highlighted error below.");
+                ModelState.AddModelError("", "");
                 return View("MapBuilder", templateModel);
             }
         }
 
-
     }
-
 }
