@@ -167,50 +167,7 @@ namespace PB_JAW.Models
             }
             return names;
         }
-
-        SQLiteConnection Connect() 
-        {
-            SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
-            try
-            {
-                sqlCon.Open();
-                Console.WriteLine("Connection is established");
-            }
-            catch
-            {
-                Console.WriteLine("Connection not established");
-            }
-            return sqlCon;
-        }
-
         /*
-        public string dirQuery(int roomNum, string building){
-            string direction;
-
-            switch(building){
-            
-                case "bec":
-                  //  direction = "SELECT * FROM BEC ExtToPFT %s", roomNum;
-                    break;
-
-                case "pft":
-                    
-                    break;
-
-                case building = "loc":
-                   
-                    break;
-
-                default:
-                    printf("Room Not Found, Cannot Perform Query");
-                    break;
-            
-            
-                    return direction;
-            }
-
-
-        }
         
         public string timeQuery(int roomNum, string building){
             string time2exit;
@@ -329,10 +286,237 @@ namespace PB_JAW.Models
 
 
         // calculate text directions for the user
-        void Directions()
+        string Directions(string srcRoom, string srcBuild, string destRoom, string destBuild)
         {
-            Connect();
+            string directions;
+            SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
+            try
+            {
+                sqlCon.Open();
+                Console.WriteLine("Connection is established");
+            }
+            catch
+            {
+                Console.WriteLine("Connection not established");
+            }
+            string extDirections = exitDirections(srcRoom, srcBuild, destBuild, sqlCon);
+            string toDirections = destDirections(destRoom, destBuild, srcBuild, sqlCon);
+            string campDirections = campusDirections(srcBuild, destBuild, sqlCon);
 
+            directions = extDirections + campDirections + toDirections;
+            //Delete, used for testing
+            Console.WriteLine(directions);
+
+            return directions;
+        }
+        string exitDirections(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
+        {
+            string directions = "";
+            using var cmd = new SQLiteCommand(con);
+            if (srcBuild == null)
+            {
+                directions = "why the fuck";
+            }
+            else if (srcBuild == "Business Education Complex")
+            {
+                if (destBuild == srcBuild)
+                {
+                    directions += "You are already in the Business Education Complex.";
+                }
+
+                else if (destBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT ExtToPFT FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (destBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT ExtToLoc FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+
+            else if (srcBuild == "Lockett Hall")
+            {
+                if (destBuild == srcBuild)
+                {
+                    directions += "You are already in Locket Hall.";
+                }
+
+                else if (destBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT ExtToPFT FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (destBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT ExtToBEC FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+
+            else if (srcBuild == "Patrick F. Taylor Hall")
+            {
+                if (destBuild == srcBuild)
+                {
+                    directions += "You are already in Patrick F. Taylor Hall.";
+                }
+
+                else if (destBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT ExtToBEC FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else
+                {
+                    cmd.CommandText = "SELECT ExtToLoc FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+            return directions;
+        }
+
+        string destDirections(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
+        {
+            string directions = "\n\n";
+            using var cmd = new SQLiteCommand(con);
+            if (destBuild == "Business Education Complex")
+            {
+                if (destBuild == srcBuild)
+                {
+                    directions += "Please use the map to find your classroom.";
+                }
+
+                else if (srcBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT FrmPFTEnt FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (srcBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT FrmLocEnt FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+
+            else if (destBuild == "Lockett Hall")
+            {
+                if (destBuild == srcBuild)
+                {
+                    directions += "Please use the map to find your classroom.";
+                }
+
+                else if (srcBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT FrmPFTEnt FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (srcBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT FrmBECEnt FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+
+            else if (destBuild == "Patrick F. Taylor Hall")
+            {
+                if (destBuild == srcBuild)
+                {
+                    directions += "Please refer to the map to find your classroom.";
+                }
+
+                else if (srcBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT FrmBECEnt FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (srcBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT FrmLocEnt FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+            return directions;
+        }
+
+        string campusDirections(string srcBuild, string destBuild, SQLiteConnection con)
+        {
+            string directions = "\n\n";
+            using var cmd = new SQLiteCommand(con);
+            if (srcBuild == null)
+            {
+                directions = "";
+            }
+            else if (destBuild == "Patrick F. Taylor Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    directions += "Your classroom is nearby. ";
+                }
+                else if (srcBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT FrmBEC FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (srcBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT FrmLoc FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+            else if (destBuild == "Business Education Complex")
+            {
+                if (srcBuild == destBuild)
+                {
+                    directions += "Your classroom is nearby. ";
+                }
+                else if (srcBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT FrmPFT FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (srcBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT FrmLoc FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+            else if (destBuild == "Lockett Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    directions += "Your classroom is nearby. ";
+                }
+                else if (srcBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT FrmBEC FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+                else if (srcBuild == "Patrick F. Taylor")
+                {
+                    cmd.CommandText = "SELECT FrmPFT FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    directions += cmd.ExecuteScalar().ToString();
+                }
+            }
+            return directions;
         }
     }
 }
