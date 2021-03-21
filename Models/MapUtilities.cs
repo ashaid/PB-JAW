@@ -161,8 +161,9 @@ namespace PB_JAW.Models
                     CreateImage(templatePath, dictionary, roomNumber, name, gs);
 
                     names.Add(name);
-                }
 
+                }
+                
             }
             return names;
         }
@@ -182,16 +183,17 @@ namespace PB_JAW.Models
             return sqlCon;
         }
 
+        /*
         public string dirQuery(int roomNum, string building){
             string direction;
 
             switch(building){
             
-                case building = "bec":
+                case "bec":
                   //  direction = "SELECT * FROM BEC ExtToPFT %s", roomNum;
                     break;
 
-                case building = "pft":
+                case "pft":
                     
                     break;
 
@@ -320,7 +322,10 @@ namespace PB_JAW.Models
 
                     return totalTime;
 
+       
+
         }
+        */
 
 
         // calculate text directions for the user
