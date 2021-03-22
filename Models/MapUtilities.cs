@@ -38,12 +38,12 @@ namespace PB_JAW.Models
             try
             {
                 dynamic os = PythonEngine.ImportModule("os");
-                Console.WriteLine("### Current working directory:\n\t" + os.getcwd());
-                Console.WriteLine("### PythonPath:\n\t" + PythonEngine.PythonPath);
+                //Console.WriteLine("### Current working directory:\n\t" + os.getcwd());
+                //Console.WriteLine("### PythonPath:\n\t" + PythonEngine.PythonPath);
 
                 // pillow version
                 dynamic pillow = Py.Import("PIL");
-                Console.WriteLine("Pillow version: " + pillow.__version__);
+                //Console.WriteLine("Pillow version: " + pillow.__version__);
             }
             catch (PythonException pe)
             {
@@ -344,6 +344,5 @@ namespace PB_JAW.Models
             cmd.Parameters.AddWithValue("@buildingID", destBuild);
             return directions;
         }
-
     }
 }
