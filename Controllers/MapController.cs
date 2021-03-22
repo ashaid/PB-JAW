@@ -11,7 +11,7 @@ namespace PB_JAW.Controllers
 {
     public class MapController : Controller
     {
-        private IWebHostEnvironment host;
+        private readonly IWebHostEnvironment host;
 
         public MapController(IWebHostEnvironment host)
         {
@@ -27,14 +27,8 @@ namespace PB_JAW.Controllers
             // create first map
             MapModel start = new MapModel();
             templateModel.AddMap(start);
-            numMaps--;
-
-
             MapModel destination = new MapModel();
             templateModel.AddMap(destination);
-            numMaps--;
-
-
             return View("MapBuilder", templateModel);
         }
 
@@ -62,9 +56,7 @@ namespace PB_JAW.Controllers
 
                     TempData["Map0"] = fileNames[0];
                     TempData["Map1"] = fileNames[1];
-
-                    TempData["BuildingName0"] = util.FindBuilding(templateModel.Maps[0].Building);
-                    TempData["BuildingName1"] = util.FindBuilding(templateModel.Maps[1].Building);
+                    TempData["Directions"] = util.Directions(templateModel.Maps);
                 }
                 catch
                 {
