@@ -75,9 +75,8 @@ namespace PB_JAW.Models
             PythonEngine.ReleaseLock(gs);
         }
 
-        public List<string> FindDetails(string BuildingNumber)
+        public List<string> FindDetails(string BuildingNumber, List<string> details)
         {
-            List<string> details = new List<string>();
 
             switch (BuildingNumber)
             {
@@ -85,16 +84,25 @@ namespace PB_JAW.Models
                     details.Add("Business Education Complex");
                     details.Add("bec");
                     details.Add("/wwwroot/template/BEC.jpeg");
+                    details.Add("FrmBEC");
+                    details.Add("ExtBEC");
+                    details.Add("TimeBEC");
                     break;
                 case "1":
                     details.Add("Patrick F. Taylor Hall");
                     details.Add("pft");
                     details.Add("/wwwroot/template/PFT-1.jpeg");
+                    details.Add("FrmPFT");
+                    details.Add("ExtPFT");
+                    details.Add("TimePFT");
                     break;
                 case "2":
                     details.Add("Lockett Hall");
                     details.Add("loc");
                     details.Add("/wwwroot/template/LOCKETT.jpeg");
+                    details.Add("FrmLoc");
+                    details.Add("ExtLoc");
+                    details.Add("TimeLoc");
                     break;
             }
             return details;
@@ -118,9 +126,9 @@ namespace PB_JAW.Models
                     // python memory store
                     IntPtr gs = await StartPython();
 
-                    // 0 = name, 1 = dictionary, 2 = template path
+                    // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
                     List<string> details = new List<string>();
-                    details = FindDetails(Maps[i].Building);
+                    details = FindDetails(Maps[i].Building, details);
 
                     // var for map
                     string buildingName = details[0];
@@ -140,6 +148,7 @@ namespace PB_JAW.Models
                 }
                 
             }
+            Directions(Maps);
             // return new image file location (array)
             return names;
         }
@@ -262,6 +271,78 @@ namespace PB_JAW.Models
 
 
         // calculate text directions for the user
-    
+        string Directions(List<MapModel> Maps)
+        {
+            string directions;
+            SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
+            try
+            {
+                sqlCon.Open();
+                Console.WriteLine("Connection is established");
+            }
+            catch
+            {
+                Console.WriteLine("Connection not established");
+            }
+            //Maps[0] == starting
+            //Maps[1] == destination
+
+            // Maps[0].RoomNumber.ToString();
+            List<string> startingDetails = new List<string>();
+            FindDetails(Maps[0].Building, startingDetails);
+            List<string> endingDetails = new List<string>();
+            FindDetails(Maps[1].Building, endingDetails);
+            // startingDetails = FindDetails(Maps[0].Building);
+            // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
+            string srcRoom = Maps[0].RoomNumber.ToString(); 
+            string destRoom = Maps[1].RoomNumber.ToString(); 
+            string srcBuild = startingDetails[1].ToUpper();
+            string destBuild = endingDetails[1].ToUpper();
+
+
+            string extDirections = exitDirections(srcRoom, srcBuild, endingDetails[4], sqlCon);
+            string toDirections = destDirections(destRoom, destBuild, startingDetails[3], sqlCon);
+            string campDirections = campusDirections(startingDetails[3], endingDetails[0], sqlCon);
+
+            directions = extDirections + campDirections + toDirections;
+            //Delete, used for testing
+            Console.WriteLine(directions);
+
+            return directions;
+        }
+        string exitDirections(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
+        {
+            string directions = "";
+            using var cmd = new SQLiteCommand(con);
+            cmd.CommandText = "SELECT @columnid FROM @tableid WHERE ROOM = @roomNum";
+            cmd.Parameters.AddWithValue("@columnid", destBuild);
+            cmd.Parameters.AddWithValue("@tableid", srcBuild); 
+            cmd.Parameters.AddWithValue("@roomNum", srcRoom); 
+            directions += cmd.ExecuteScalar().ToString();
+            return directions;
+        }
+
+        string destDirections(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
+        {
+            string directions = "";
+            using var cmd = new SQLiteCommand(con);
+            cmd.CommandText = "SELECT @columnid FROM @tableid WHERE ROOM = @roomNum";
+            cmd.Parameters.AddWithValue("@columnid", srcBuild);
+            cmd.Parameters.AddWithValue("@tableid", destBuild);
+            cmd.Parameters.AddWithValue("@roomNum", destRoom);
+            directions += cmd.ExecuteScalar().ToString();
+
+            return directions;
+        }
+
+        string campusDirections(string srcBuild, string destBuild, SQLiteConnection con)
+        {
+            string directions = "";
+            using var cmd = new SQLiteCommand(con);
+            cmd.CommandText = "SELECT @columnid FROM CAMPUS WHERE BuildingID = @buildingID";
+            cmd.Parameters.AddWithValue("@columnid", srcBuild);
+            cmd.Parameters.AddWithValue("@buildingID", destBuild);
+            return directions;
+        }
     }
 }
