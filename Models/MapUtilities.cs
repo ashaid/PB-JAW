@@ -7,6 +7,7 @@ using Python.Included;
 using Python.Runtime;
 using System.IO;
 using System.Data.SQLite;
+using System.Globalization;
 
 namespace PB_JAW.Models
 {
@@ -167,123 +168,6 @@ namespace PB_JAW.Models
             }
             return names;
         }
-        /*
-        
-        public string timeQuery(int roomNum, string building){
-            string time2exit;
-        
-            switch(building){
-            
-                case building = "bec":
-                    break;
-
-                case building = "pft":
-             
-                    break;
-
-                case building = "loc":
-            
-                    break;
-
-                default:
-                    printf("Room Not Found, Cannot Perform Query");
-                    break;
-            
-            
-                    return time2exit;
-
-        }
-
-        // calculate travel time between start and ending positions
-        void TravelTime()
-        {
-            // grab current time
-            // grab source destination and end destination
-            // dynamically calulcate time using sql and priorty queue
-
-            int totalTime;
-
-           switch(a.building){
-            
-                case a.building = "BEC":
-                    if(b.building == "PFT") //from BEC to PFT
-                    {
-                        totalTime = a.time2exit + b.time2exit + PFT2BEC;
-                    }
-                    else if (b.building == "Loc") //from BEC to Lockett
-                    {
-                        totalTime = a.time2exit + b.time2exit + BEC2Loc;
-                    }
-                    else if (b.building == "BEC") //from BEC to BEC
-                    {
-                        totalTime = 0; //within the same building. Throw catch for output saying "in the same building. ETA < 3 minutes or something
-                    }
-                    else{//throw error
-                    }
-                    break;
-
-                case a.building = "PFT":
-                    if(b.building == "PFT") //from BEC to PFT
-                    {
-                        totalTime = 0 //within the same building. Throw catch for output saying "in the same building. ETA < 3 minutes or something
-                    }
-                    else if (b.building == "Loc") //from BEC to Lockett
-                    {
-                        totalTime = a.time2exit + b.time2exit + PFT2Loc;
-                    }
-                    else if (b.building == "BEC") //from BEC to BEC
-                    {
-                        totalTime = a.time2exit + b.time2exit + PFT2BEC; 
-                    }
-                    else{//throw error
-                    }
-                    break;
-
-                case a.building = "Loc":
-                    if(b.building == "PFT") //from BEC to PFT
-                    {
-                        totalTime = a.time2exit + b.time2exit + PFT2Loc;
-                    }
-                    else if (b.building == "Loc") //from BEC to Lockett
-                    {
-                        totalTime = 0; //within same building. throw catch
-                    }
-                    else if (b.building == "BEC") //from BEC to BEC
-                    {
-                        totalTime = a.time2exit + b.time2exit + BEC2Loc;
-                    }
-                    else{//throw error
-                    }
-                    break;
-
-                case b.building = null: //source room null means user is approaching from off of campus
-                    if(a.building == "PFT"){
-                    // printf("You are arriving from off of campus to Patrick F. Taylor Hall. Unexpected ETA. \n");
-                    totalTime = 0;
-                    }
-                    else if(a.building == "Loc"){
-                    // printf("You are arriving from off of campus to Lockett Hall. Unexpected ETA. \n");
-                    totalTime = 0;
-                    }
-                    else if(a.building == "BEC"){
-                    // printf("You are arriving from off of campus to the Business Education Complex. Unexpected ETA. \n");
-                    totalTime = 0;
-                    }
-                    else{
-                    //thow error
-                    }
-
-                default: //throw error
-                    totalTime = 0;
-                    break;
-
-                    return totalTime;
-
-       
-
-        }
-        */
-
 
         // calculate text directions for the user
         string Directions(string srcRoom, string srcBuild, string destRoom, string destBuild)
@@ -302,6 +186,7 @@ namespace PB_JAW.Models
             string extDirections = exitDirections(srcRoom, srcBuild, destBuild, sqlCon);
             string toDirections = destDirections(destRoom, destBuild, srcBuild, sqlCon);
             string campDirections = campusDirections(srcBuild, destBuild, sqlCon);
+            
 
             directions = extDirections + campDirections + toDirections;
             //Delete, used for testing
@@ -518,5 +403,271 @@ namespace PB_JAW.Models
             }
             return directions;
         }
+
+        string timeQuery(string srcRoom, string destRoom, string destBuild, string srcBuild){
+
+            SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
+            try
+            {
+                sqlCon.Open();
+                Console.WriteLine("Connection is established");
+            }
+            catch
+            {
+                Console.WriteLine("Connection not established");
+            }
+            double srcToExit = exitTimes(srcRoom, srcBuild, destBuild, sqlCon); //returns time in seconds
+            double buildTime = destTimes(destRoom, destBuild, srcBuild, sqlCon); //returns time in seconds
+            double entToDest = campusTimes(srcBuild, destBuild, sqlCon); //returns time in seconds
+            
+            string eta = timeCompiler(srcToExit, buildTime, entToDest); //adds time to users current time to provide 
+                                                                        //an estimated time of arrival
+            string time = "Your expected arrival time is " + eta + ".\n";
+            return time;
+        }
+
+        double exitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con){
+        
+            double timeFromSrc;
+            using var cmd = new SQLiteCommand(con);
+            
+            if (srcBuild == null)
+            {
+                timeFromSrc = -1; //time incalculable if coming from off of campus
+            }
+            else if (srcBuild == "Patrick F. Taylor Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeFromSrc = 0; //negligible amount of time going from between classes
+                }
+                else if (destBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT TimeBEC FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    timeFromSrc = cmd.ExecuteScalar();
+                }
+                else if (destBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT TimeLOC FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    timeFromSrc = cmd.ExecuteScalar();
+                }
+            }
+            else if (srcBuild == "Business Education Complex")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeFromSrc = 0;
+                }
+                else if (destBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT TimePFT FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    timeFromSrc = cmd.ExecuteScalar();
+                }
+                else if (destBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT TimeLOC FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    timeFromSrc = cmd.ExecuteScalar();
+                }
+            }
+            else if (srcBuild == "Lockett Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeFromSrc = 0;
+                }
+                lse if (destBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT TimeBEC FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    timeFromSrc = cmd.ExecuteScalar();
+                }
+                else if (destBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT TimePFT FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                    timeFromSrc = cmd.ExecuteScalar();
+                }
+            }
+
+            return timeConverter(timeFromSrc);
+        }
+
+        double destTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con){
+        
+            double timeToDest = 0;
+
+             using var cmd = new SQLiteCommand(con);
+            if (srcBuild == null)
+            {
+                timeToDest = -1; //time incalculable if coming from off of campus
+            }
+            else if (destBuild == "Patrick F. Taylor Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeToDest = 0; //negligible amount of time going from between classes
+                }
+                else if (srcBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT TimeBEC FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    timeToDest += cmd.ExecuteScalar();
+                }
+                else if (srcBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT TimeLOC FROM PFT WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    timeToDest += cmd.ExecuteScalar();
+                }
+            }
+            else if (destBuild == "Business Education Complex")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeToDest = 0;
+                }
+                else if (srcBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT TimePFT FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    timeToDest += cmd.ExecuteScalar();
+                }
+                else if (srcBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT TimeLOC FROM BEC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    timeToDest += cmd.ExecuteScalar();
+                }
+            }
+            else if (destBuild == "Lockett Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeToDest = 0;
+                }
+                lse if (srcBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT TimeBEC FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    timeToDest += cmd.ExecuteScalar();
+                }
+                else if (srcBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT TimePFT FROM LOC WHERE ROOM = @roomNum";
+                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
+                    timeToDest += cmd.ExecuteScalar();
+                }
+            }
+       
+            return timeConverter(timeToDest);
+        }
+
+        double campusTimes(string srcBuild, string destBuild, SQLiteConnection con){
+        
+            double timeToBuild;
+            using var cmd = new SQLiteCommand(con);
+            
+            if (srcBuild == null)
+            {
+                timeToBuild = -1; //time incalculable if coming from off of campus
+            }
+            else if (srcBuild == "Patrick F. Taylor Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeToBuild = 0; //negligible amount of time going from between classes
+                }
+                else if (destBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT TimeBEC FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    timeToBuild = cmd.ExecuteScalar();
+                }
+                else if (destBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT TimeLOC FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    timeToBuild = cmd.ExecuteScalar();
+                }
+            }
+            else if (srcBuild == "Business Education Complex")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeToBuild = 0;
+                }
+                else if (destBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT TimePFT FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    timeToBuild = cmd.ExecuteScalar();
+                }
+                else if (destBuild == "Lockett Hall")
+                {
+                    cmd.CommandText = "SELECT TimeLOC FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    timeToBuild = cmd.ExecuteScalar();
+                }
+            }
+            else if (srcBuild == "Lockett Hall")
+            {
+                if (srcBuild == destBuild)
+                {
+                    timeToBuild = 0;
+                }
+                lse if (destBuild == "Business Education Complex")
+                {
+                    cmd.CommandText = "SELECT TimeBEC FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    timeToBuild = cmd.ExecuteScalar();
+                }
+                else if (destBuild == "Patrick F. Taylor Hall")
+                {
+                    cmd.CommandText = "SELECT TimePFT FROM CAMPUS WHERE BuildingID = @destBuild";
+                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
+                    timeToBuild = cmd.ExecuteScalar();
+                }
+            }
+
+            return timeConverter(timeToBuild);
+        }
+
+
+        double timeConverter(double a){
+        
+            if(a > 1.0){
+                int wholeNum;
+                while(wholeNum <= a){
+                wholeNum++
+                }
+
+                double minutesToSeconds = wholeNum * 60;
+                double seconds = 60*(a - wholeNum);
+                double totalSeconds = minutesToSeconds + seconds;
+
+                return totalSeconds;
+                
+            }
+            else{
+                return a*60;
+            }
+        }
+
+        string timeCompiler(double srcToExit, double buildTime, double desToExit){
+
+            DateTime localTime = DateTime.Now;
+
+            return localTime.AddSeconds(srcToExit + buildTime + desToExit);
+            
+        }
+
+
+        }
+
+
     }
 }
