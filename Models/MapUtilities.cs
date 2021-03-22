@@ -244,6 +244,17 @@ namespace PB_JAW.Models
 
         public string timeQuery(List<MapModel> Maps)
         {
+            //variable declarations;
+            string time = "";
+            double eta = 0;
+            DateTime currentTime;
+            DateTime updateTime;
+            string arrivalTime;
+            string srcRoom;
+            string destRoom;
+            string srcBuild;
+            string destBuild;
+
             //establishes the sqlite connection and throws an error if the connection is not established
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
@@ -261,27 +272,38 @@ namespace PB_JAW.Models
             List<string> endingDetails = new List<string>();
             FindDetails(Maps[1].Building, endingDetails);
 
-            string srcRoom = Maps[0].RoomNumber.ToString();
-            string destRoom = Maps[1].RoomNumber.ToString();
-            string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
-            string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+            if (Maps[0].Building.Contains("-1"))
+            {
+                time = "You have no starting destination, therefore, arrival time can not be calculated. Walk fast!";
+            }
+            else
+            {
+                srcRoom = Maps[0].RoomNumber.ToString();
+                destRoom = Maps[1].RoomNumber.ToString();
+                srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+                destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+                if (srcBuild == destBuild)
+                {
+                    time = "Your next class is in the same building. It will not take long to arrive there, but still move quickly!";
+                }
+                else
+                {
+                    double srcToExit = exitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon);
+                    double buildTime = destTimes(destRoom, destBuild, startingDetails[5], sqlCon);
+                    double entToDest = campusTimes(startingDetails[5], destBuild, sqlCon);
+                    //round the minutes up to a solid minute
+                    //meant to give the user a delayed time as no one will read the seconds and it will only make them walk faster if they think it will take longer
+                    eta = Math.Ceiling(srcToExit + buildTime + entToDest);
 
-            // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
-            double srcToExit = exitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon); //returns time in seconds
-            double buildTime = destTimes(destRoom, destBuild, startingDetails[5], sqlCon); //returns time in seconds
-            double entToDest = campusTimes(startingDetails[5], destBuild, sqlCon); //returns time in seconds
-
-            //round the minutes up to a solid minute
-            //meant to give the user a delayed time as no one will read the seconds and it will only make them walk faster if they think it will take longer
-            double eta = Math.Ceiling(srcToExit + buildTime + entToDest);
-
-            //grabs the users current time
-            DateTime currentTime = DateTime.Now;
-            //adds the travel time minutes to current time
-            DateTime updateTime = currentTime.AddMinutes(eta);
-            //changes the updated time to a string called arrival time
-            string arrivalTime = updateTime.ToString("t");
-            string time = "Your expected arrival time is " + arrivalTime + ".\n";
+                    //grabs the users current time
+                    currentTime = DateTime.Now;
+                    //adds the travel time minutes to current time
+                    updateTime = currentTime.AddMinutes(eta);
+                    //changes the updated time to a string called arrival time
+                    arrivalTime = updateTime.ToString("t");
+                    time = "Your expected arrival time is " + arrivalTime + ".\n";
+                }
+            }
 
             //used for testing, delete later
             Console.WriteLine(time);
