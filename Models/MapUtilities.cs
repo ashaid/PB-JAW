@@ -315,31 +315,10 @@ namespace PB_JAW.Models
             using var cmd = new SQLiteCommand(con);
             string directions = "";
 
-            if (srcBuild == "BEC")
-            {
-                cmd.CommandText = "SELECT ExtPFT FROM BEC WHERE ROOM = @roomNum";
-                //sqlCall(destBuild, srcRoom, directions, cmd);
-                cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                cmd.Prepare();
-                directions = cmd.ExecuteScalar().ToString();
-            }
-            else if (srcBuild == "PFT")
-            {
-                cmd.CommandText = "SELECT @columnid FROM PFT WHERE ROOM = @roomNum";
-                //sqlCall(destBuild, srcRoom, directions, cmd);
-                cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                cmd.Prepare();
-                directions = cmd.ExecuteScalar().ToString();
-            }
-            else if (srcBuild == "LOC") 
-            {
-                cmd.CommandText = "SELECT @columnid FROM LOC WHERE ROOM = @roomNum";
-                //sqlCall(destBuild, srcRoom, directions, cmd);
-                cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                cmd.Prepare();
-                directions = cmd.ExecuteScalar().ToString();
-            }
-
+            cmd.CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum";
+            cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+            cmd.Prepare();
+            directions = cmd.ExecuteScalar().ToString();
             return directions;
         }
 
@@ -347,38 +326,19 @@ namespace PB_JAW.Models
         {
             using var cmd = new SQLiteCommand(con);
             string directions = "";
-            if (destBuild == "BEC")
-            {
-                cmd.CommandText = "SELECT @columnid FROM BEC WHERE ROOM = @roomNum";
-                //sqlCall(srcBuild, destRoom, directions, cmd);
-                cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                cmd.Prepare();
-                directions = cmd.ExecuteScalar().ToString();
-            }
-            else if (destBuild == "PFT")
-            {
-                cmd.CommandText = "SELECT FrmBEC FROM PFT WHERE ROOM = @roomNum";
-                //sqlCall(srcBuild, destRoom, directions, cmd);
-                cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                cmd.Prepare();
-                directions = cmd.ExecuteScalar().ToString();
-            }
-            else if (destBuild == "LOC")
-            {
-                cmd.CommandText = "SELECT @columnid FROM LOC WHERE ROOM = @roomNum";
-                //sqlCall(srcBuild, destRoom, directions, cmd);
-                cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                cmd.Prepare();
-                directions = cmd.ExecuteScalar().ToString();
-            }
+
+            cmd.CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum";
+            cmd.Parameters.AddWithValue("@roomNum", destRoom);
+            cmd.Prepare();
+            directions = cmd.ExecuteScalar().ToString();
+
             return directions;
         }
 
         string campusDirections(string srcBuild, string destBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT FrmBEC FROM CAMPUS WHERE BuildingID = @buildingID";
-            cmd.Parameters.AddWithValue("@columnid", srcBuild);
+            cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingID";
             cmd.Parameters.AddWithValue("@buildingID", destBuild);
             string directions = cmd.ExecuteScalar().ToString();
             return directions;
