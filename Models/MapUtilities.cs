@@ -271,7 +271,7 @@ namespace PB_JAW.Models
 
 
         // calculate text directions for the user
-        void Directions(List<MapModel> Maps)
+        public string Directions(List<MapModel> Maps)
         {
             string directions;
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
@@ -305,9 +305,11 @@ namespace PB_JAW.Models
 
             directions = extDirections + campDirections + toDirections;
             //Delete, used for testing
-            Console.WriteLine(directions);
+            // Console.WriteLine(directions);
 
             sqlCon.Close();
+
+            return directions;
         }
         string ExitDirections(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
