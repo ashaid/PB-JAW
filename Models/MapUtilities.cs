@@ -299,9 +299,9 @@ namespace PB_JAW.Models
             string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
             string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
 
-            string extDirections =  exitDirections(srcRoom, srcBuild, endingDetails[4], sqlCon);
-            string toDirections = destDirections(destRoom, destBuild, startingDetails[3], sqlCon);
-            string campDirections = campusDirections(startingDetails[3], endingDetails[0], sqlCon);
+            string extDirections =  ExitDirections(srcRoom, srcBuild, endingDetails[4], sqlCon);
+            string toDirections = DestDirections(destRoom, destBuild, startingDetails[3], sqlCon);
+            string campDirections = CampusDirections(startingDetails[3], endingDetails[0], sqlCon);
 
             directions = extDirections + campDirections + toDirections;
             //Delete, used for testing
@@ -309,7 +309,7 @@ namespace PB_JAW.Models
 
             sqlCon.Close();
         }
-        string exitDirections(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
+        string ExitDirections(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
 
             using var cmd = new SQLiteCommand(con);
@@ -322,7 +322,7 @@ namespace PB_JAW.Models
             return directions;
         }
 
-        string destDirections(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
+        string DestDirections(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
             string directions = "";
@@ -335,10 +335,12 @@ namespace PB_JAW.Models
             return directions;
         }
 
-        string campusDirections(string srcBuild, string destBuild, SQLiteConnection con)
+        string CampusDirections(string srcBuild, string destBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingID";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingID"
+            };
             cmd.Parameters.AddWithValue("@buildingID", destBuild);
             string directions = cmd.ExecuteScalar().ToString();
             return directions;

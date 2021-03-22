@@ -11,7 +11,7 @@ namespace PB_JAW.Controllers
 {
     public class MapController : Controller
     {
-        private IWebHostEnvironment host;
+        private readonly IWebHostEnvironment host;
 
         public MapController(IWebHostEnvironment host)
         {
@@ -27,14 +27,8 @@ namespace PB_JAW.Controllers
             // create first map
             MapModel start = new MapModel();
             templateModel.AddMap(start);
-            numMaps--;
-
-
             MapModel destination = new MapModel();
             templateModel.AddMap(destination);
-            numMaps--;
-
-
             return View("MapBuilder", templateModel);
         }
 
