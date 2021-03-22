@@ -148,7 +148,6 @@ namespace PB_JAW.Models
                 }
                 
             }
-            Directions(Maps);
             // return new image file location (array)
             return names;
         }
@@ -273,7 +272,7 @@ namespace PB_JAW.Models
         // calculate text directions for the user
         public string Directions(List<MapModel> Maps)
         {
-            string directions;
+            string directions = "";
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
             {
@@ -284,29 +283,40 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine("Connection not established");
             }
-            //Maps[0] == starting
-            //Maps[1] == destination
 
-            // Maps[0].RoomNumber.ToString();
             List<string> startingDetails = new List<string>();
             FindDetails(Maps[0].Building, startingDetails);
             List<string> endingDetails = new List<string>();
             FindDetails(Maps[1].Building, endingDetails);
-            // startingDetails = FindDetails(Maps[0].Building);
-            // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
-            string srcRoom = Maps[0].RoomNumber.ToString(); 
-            string destRoom = Maps[1].RoomNumber.ToString(); 
-            string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
-            string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
 
-            string extDirections =  ExitDirections(srcRoom, srcBuild, endingDetails[4], sqlCon);
-            string toDirections = DestDirections(destRoom, destBuild, startingDetails[3], sqlCon);
-            string campDirections = CampusDirections(startingDetails[3], endingDetails[0], sqlCon);
-
-            directions = extDirections + campDirections + toDirections;
-            //Delete, used for testing
-            // Console.WriteLine(directions);
-
+            string srcRoom;
+            string destRoom;
+            string srcBuild;
+            string destBuild;
+            if (Maps[0].Building.Contains("-1")) 
+            {
+                directions = "You have selected no starting point, therefore, directions will not be provided. Please refer to the map.";
+            }
+            else 
+            {
+                // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
+                srcRoom = Maps[0].RoomNumber.ToString();
+                destRoom = Maps[1].RoomNumber.ToString();
+                srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+                destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+                if (srcBuild == destBuild)
+                {
+                    directions = "You are already in the building. Please refer to the map in order to find your classroom, it is nearby!";
+                }
+                else
+                {
+                    string extDirections = ExitDirections(srcRoom, srcBuild, endingDetails[4], sqlCon);
+                    string toDirections = DestDirections(destRoom, destBuild, startingDetails[3], sqlCon);
+                    string campDirections = CampusDirections(startingDetails[3], endingDetails[0], sqlCon);
+                    directions = extDirections + campDirections + toDirections;
+                }
+            }
+            //closes sqlite connection
             sqlCon.Close();
 
             return directions;
@@ -339,12 +349,12 @@ namespace PB_JAW.Models
 
         string CampusDirections(string srcBuild, string destBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con)
-            {
-                CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingID"
-            };
+            using var cmd = new SQLiteCommand(con);
+            string directions = "";
+
+            cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingID";
             cmd.Parameters.AddWithValue("@buildingID", destBuild);
-            string directions = cmd.ExecuteScalar().ToString();
+            directions = cmd.ExecuteScalar().ToString();
             return directions;
         }
     }
