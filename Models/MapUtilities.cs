@@ -242,8 +242,9 @@ namespace PB_JAW.Models
             return directions;
         }
 
-        string timeQuery(string srcRoom, string destRoom, string destBuild, string srcBuild){
-
+        public string timeQuery(List<MapModel> Maps)
+        {
+            //establishes the sqlite connection and throws an error if the connection is not established
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
             {
@@ -254,258 +255,71 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine("Connection not established");
             }
-            double srcToExit = exitTimes(srcRoom, srcBuild, destBuild, sqlCon); //returns time in seconds
-            double buildTime = destTimes(destRoom, destBuild, srcBuild, sqlCon); //returns time in seconds
-            double entToDest = campusTimes(srcBuild, destBuild, sqlCon); //returns time in seconds
-            
-            string eta = timeCompiler(srcToExit, buildTime, entToDest); //adds time to users current time to provide 
-                                                                        //an estimated time of arrival
-            string time = "Your expected arrival time is " + eta + ".\n";
+            //establishes the library for the different SQL calls
+            List<string> startingDetails = new List<string>();
+            FindDetails(Maps[0].Building, startingDetails);
+            List<string> endingDetails = new List<string>();
+            FindDetails(Maps[1].Building, endingDetails);
+
+            string srcRoom = Maps[0].RoomNumber.ToString();
+            string destRoom = Maps[1].RoomNumber.ToString();
+            string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+            string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+
+            // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
+            double srcToExit = exitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon); //returns time in seconds
+            double buildTime = destTimes(destRoom, destBuild, startingDetails[5], sqlCon); //returns time in seconds
+            double entToDest = campusTimes(startingDetails[5], destBuild, sqlCon); //returns time in seconds
+
+            //round the minutes up to a solid minute
+            //meant to give the user a delayed time as no one will read the seconds and it will only make them walk faster if they think it will take longer
+            double eta = Math.Ceiling(srcToExit + buildTime + entToDest);
+
+            //grabs the users current time
+            DateTime currentTime = DateTime.Now;
+            //adds the travel time minutes to current time
+            DateTime updateTime = currentTime.AddMinutes(eta);
+            //changes the updated time to a string called arrival time
+            string arrivalTime = updateTime.ToString("t");
+            string time = "Your expected arrival time is " + arrivalTime + ".\n";
+
+            //used for testing, delete later
+            Console.WriteLine(time);
             return time;
         }
 
-        double exitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con){
+        double exitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
+        {
         
-            double timeFromSrc;
+            double exitTime = 0;
             using var cmd = new SQLiteCommand(con);
-            
-            if (srcBuild == null)
-            {
-                timeFromSrc = -1; //time incalculable if coming from off of campus
-            }
-            else if (srcBuild == "Patrick F. Taylor Hall")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeFromSrc = 0; //negligible amount of time going from between classes
-                }
-                else if (destBuild == "Business Education Complex")
-                {
-                    cmd.CommandText = "SELECT TimeBEC FROM PFT WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                    timeFromSrc = cmd.ExecuteScalar();
-                }
-                else if (destBuild == "Lockett Hall")
-                {
-                    cmd.CommandText = "SELECT TimeLOC FROM PFT WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                    timeFromSrc = cmd.ExecuteScalar();
-                }
-            }
-            else if (srcBuild == "Business Education Complex")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeFromSrc = 0;
-                }
-                else if (destBuild == "Patrick F. Taylor Hall")
-                {
-                    cmd.CommandText = "SELECT TimePFT FROM BEC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                    timeFromSrc = cmd.ExecuteScalar();
-                }
-                else if (destBuild == "Lockett Hall")
-                {
-                    cmd.CommandText = "SELECT TimeLOC FROM BEC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                    timeFromSrc = cmd.ExecuteScalar();
-                }
-            }
-            else if (srcBuild == "Lockett Hall")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeFromSrc = 0;
-                }
-                lse if (destBuild == "Business Education Complex")
-                {
-                    cmd.CommandText = "SELECT TimeBEC FROM LOC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                    timeFromSrc = cmd.ExecuteScalar();
-                }
-                else if (destBuild == "Patrick F. Taylor Hall")
-                {
-                    cmd.CommandText = "SELECT TimePFT FROM LOC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-                    timeFromSrc = cmd.ExecuteScalar();
-                }
-            }
+            cmd.CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum";
+            cmd.Parameters.AddWithValue("@roomNum", srcRoom);
 
-            return timeConverter(timeFromSrc);
+            exitTime = Convert.ToDouble(cmd.ExecuteScalar());
+            return exitTime;
         }
 
         double destTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con){
         
             double timeToDest = 0;
+            using var cmd = new SQLiteCommand(con);
+            cmd.CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum";
+            cmd.Parameters.AddWithValue("@roomNum", destRoom);
 
-             using var cmd = new SQLiteCommand(con);
-            if (srcBuild == null)
-            {
-                timeToDest = -1; //time incalculable if coming from off of campus
-            }
-            else if (destBuild == "Patrick F. Taylor Hall")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeToDest = 0; //negligible amount of time going from between classes
-                }
-                else if (srcBuild == "Business Education Complex")
-                {
-                    cmd.CommandText = "SELECT TimeBEC FROM PFT WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                    timeToDest += cmd.ExecuteScalar();
-                }
-                else if (srcBuild == "Lockett Hall")
-                {
-                    cmd.CommandText = "SELECT TimeLOC FROM PFT WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                    timeToDest += cmd.ExecuteScalar();
-                }
-            }
-            else if (destBuild == "Business Education Complex")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeToDest = 0;
-                }
-                else if (srcBuild == "Patrick F. Taylor Hall")
-                {
-                    cmd.CommandText = "SELECT TimePFT FROM BEC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                    timeToDest += cmd.ExecuteScalar();
-                }
-                else if (srcBuild == "Lockett Hall")
-                {
-                    cmd.CommandText = "SELECT TimeLOC FROM BEC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                    timeToDest += cmd.ExecuteScalar();
-                }
-            }
-            else if (destBuild == "Lockett Hall")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeToDest = 0;
-                }
-                lse if (srcBuild == "Business Education Complex")
-                {
-                    cmd.CommandText = "SELECT TimeBEC FROM LOC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                    timeToDest += cmd.ExecuteScalar();
-                }
-                else if (srcBuild == "Patrick F. Taylor Hall")
-                {
-                    cmd.CommandText = "SELECT TimePFT FROM LOC WHERE ROOM = @roomNum";
-                    cmd.Parameters.AddWithValue("@roomNum", destRoom);
-                    timeToDest += cmd.ExecuteScalar();
-                }
-            }
-       
-            return timeConverter(timeToDest);
+            timeToDest = Convert.ToDouble(cmd.ExecuteScalar());
+            return timeToDest;
         }
 
         double campusTimes(string srcBuild, string destBuild, SQLiteConnection con){
         
-            double timeToBuild;
+            double timeToBuild = 0;
             using var cmd = new SQLiteCommand(con);
-            
-            if (srcBuild == null)
-            {
-                timeToBuild = -1; //time incalculable if coming from off of campus
-            }
-            else if (srcBuild == "Patrick F. Taylor Hall")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeToBuild = 0; //negligible amount of time going from between classes
-                }
-                else if (destBuild == "Business Education Complex")
-                {
-                    cmd.CommandText = "SELECT TimeBEC FROM CAMPUS WHERE BuildingID = @destBuild";
-                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
-                    timeToBuild = cmd.ExecuteScalar();
-                }
-                else if (destBuild == "Lockett Hall")
-                {
-                    cmd.CommandText = "SELECT TimeLOC FROM CAMPUS WHERE BuildingID = @destBuild";
-                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
-                    timeToBuild = cmd.ExecuteScalar();
-                }
-            }
-            else if (srcBuild == "Business Education Complex")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeToBuild = 0;
-                }
-                else if (destBuild == "Patrick F. Taylor Hall")
-                {
-                    cmd.CommandText = "SELECT TimePFT FROM CAMPUS WHERE BuildingID = @destBuild";
-                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
-                    timeToBuild = cmd.ExecuteScalar();
-                }
-                else if (destBuild == "Lockett Hall")
-                {
-                    cmd.CommandText = "SELECT TimeLOC FROM CAMPUS WHERE BuildingID = @destBuild";
-                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
-                    timeToBuild = cmd.ExecuteScalar();
-                }
-            }
-            else if (srcBuild == "Lockett Hall")
-            {
-                if (srcBuild == destBuild)
-                {
-                    timeToBuild = 0;
-                }
-                lse if (destBuild == "Business Education Complex")
-                {
-                    cmd.CommandText = "SELECT TimeBEC FROM CAMPUS WHERE BuildingID = @destBuild";
-                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
-                    timeToBuild = cmd.ExecuteScalar();
-                }
-                else if (destBuild == "Patrick F. Taylor Hall")
-                {
-                    cmd.CommandText = "SELECT TimePFT FROM CAMPUS WHERE BuildingID = @destBuild";
-                    cmd.Parameters.AddWithValue("@destBuild", destBuild);
-                    timeToBuild = cmd.ExecuteScalar();
-                }
-            }
+            cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid";
+            cmd.Parameters.AddWithValue("@buildingid", destBuild);
 
-            return timeConverter(timeToBuild);
+            timeToBuild = Convert.ToDouble(cmd.ExecuteScalar());
+            return timeToBuild;
         }
-
-
-        double timeConverter(double a){
-        
-            if(a > 1.0){
-                int wholeNum;
-                while(wholeNum <= a){
-                wholeNum++
-                }
-
-                double minutesToSeconds = wholeNum * 60;
-                double seconds = 60*(a - wholeNum);
-                double totalSeconds = minutesToSeconds + seconds;
-
-                return totalSeconds;
-                
-            }
-            else{
-                return a*60;
-            }
-        }
-
-        string timeCompiler(double srcToExit, double buildTime, double desToExit){
-
-            DateTime localTime = DateTime.Now;
-
-            return localTime.AddSeconds(srcToExit + buildTime + desToExit);
-            
-        }
-
-
-        }
-
-
     }
 }
