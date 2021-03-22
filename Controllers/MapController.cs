@@ -62,9 +62,7 @@ namespace PB_JAW.Controllers
 
                     TempData["Map0"] = fileNames[0];
                     TempData["Map1"] = fileNames[1];
-
-                    TempData["BuildingName0"] = util.FindBuilding(templateModel.Maps[0].Building);
-                    TempData["BuildingName1"] = util.FindBuilding(templateModel.Maps[1].Building);
+                    // TempData["Instructions"] = util.Directions(templateModel.Maps);
                 }
                 catch
                 {

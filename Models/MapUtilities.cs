@@ -51,6 +51,7 @@ namespace PB_JAW.Models
             }
             return gs;
         }
+
         // code to find image corresponding to user input
         void CreateImage(string templatePath, string dictionary, string roomNumber, string name, IntPtr gs)
         {
@@ -74,67 +75,36 @@ namespace PB_JAW.Models
             PythonEngine.ReleaseLock(gs);
         }
 
-        public string FindBuildingDictionary(string BuildingNumber)
+        public List<string> FindDetails(string BuildingNumber)
         {
-            string s = "";
-
-            switch (BuildingNumber)
-            {
-                case "Business Education Complex":
-                    s = "bec";
-                    break;
-                case "Patrick F. Taylor Hall":
-                    s = "pft";
-                    break;
-                case "Lockett Hall":
-                    s = "loc";
-                    break;
-            }
-            return s;
-        }
-        public string FindBuilding(string BuildingNumber)
-        {
-            string s = "";
+            List<string> details = new List<string>();
 
             switch (BuildingNumber)
             {
                 case "0":
-                    s = "Business Education Complex";
+                    details.Add("Business Education Complex");
+                    details.Add("bec");
+                    details.Add("/wwwroot/template/BEC.jpeg");
                     break;
                 case "1":
-                    s = "Patrick F. Taylor Hall";
+                    details.Add("Patrick F. Taylor Hall");
+                    details.Add("pft");
+                    details.Add("/wwwroot/template/PFT-1.jpeg");
                     break;
                 case "2":
-                    s = "Lockett Hall";
+                    details.Add("Lockett Hall");
+                    details.Add("loc");
+                    details.Add("/wwwroot/template/LOCKETT.jpeg");
                     break;
             }
-            return s;
-        }
-
-        public string FindMapTemplate(string name)
-        {
-            string templateName = "";
-            if (name == "Business Education Complex")
-            {
-                templateName = "/wwwroot/template/BEC.jpeg";
-            }
-
-            else if (name == "Patrick F. Taylor Hall")
-            {
-                templateName = "/wwwroot/template/PFT-1.jpeg";
-            }
-            else if (name == "Lockett Hall")
-            {
-                templateName = "/wwwroot/template/LOCKETT.jpeg";
-            }
-
-            return templateName;
+            return details;
         }
 
         // code to create map
         public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
             List<string> names = new List<string>();
+
             // for each map in list 
             for (int i = 0; i < Maps.Count; i++)
             {
@@ -148,23 +118,29 @@ namespace PB_JAW.Models
                     // python memory store
                     IntPtr gs = await StartPython();
 
-                    // create initial map
-                    string buildingName = FindBuilding(Maps[i].Building);
-                    string dictionary = FindBuildingDictionary(buildingName);
-                    string roomNumber = Maps[i].RoomNumber.ToString();
+                    // 0 = name, 1 = dictionary, 2 = template path
+                    List<string> details = new List<string>();
+                    details = FindDetails(Maps[i].Building);
 
-                    string templatePath = FindMapTemplate(buildingName);
+                    // var for map
+                    string buildingName = details[0];
+                    string dictionary = details[1];
+                    string templatePath = details[2];
+                    string roomNumber = Maps[i].RoomNumber.ToString();
 
                     // name of new file
                     string name = buildingName + "_" + roomNumber + ".jpeg";
 
                     CreateImage(templatePath, dictionary, roomNumber, name, gs);
 
+                    // add new file to names array
                     names.Add(name);
 
+                    details.Clear();
                 }
                 
             }
+            // return new image file location (array)
             return names;
         }
         /*
@@ -286,7 +262,7 @@ namespace PB_JAW.Models
 
 
         // calculate text directions for the user
-        string Directions(string srcRoom, string srcBuild, string destRoom, string destBuild)
+        string Directions(List<MapModel> Maps)
         {
             string directions;
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
@@ -299,6 +275,13 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine("Connection not established");
             }
+            // Maps[0] == starting
+            // Maps[1] == destination
+
+            // Maps[0].RoomNumber.ToString();
+            // List<string> startingDetails = new List<string>();
+            // startingDetails = FindDetails(Maps[0].Building);
+
             string extDirections = exitDirections(srcRoom, srcBuild, destBuild, sqlCon);
             string toDirections = destDirections(destRoom, destBuild, srcBuild, sqlCon);
             string campDirections = campusDirections(srcBuild, destBuild, sqlCon);
