@@ -57,6 +57,8 @@ namespace PB_JAW.Controllers
                     TempData["Map0"] = fileNames[0];
                     TempData["Map1"] = fileNames[1];
                     TempData["Directions"] = util.Directions(templateModel.Maps);
+                    //not sure if this is supposed to be here just put it here to test it
+                    TempData["Times"] = util.timeQuery(templateModel.Maps);
                 }
                 catch
                 {
