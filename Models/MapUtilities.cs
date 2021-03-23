@@ -157,6 +157,11 @@ namespace PB_JAW.Models
         public string Directions(List<MapModel> Maps)
         {
             string directions = "";
+            /*
+             * establishes the sqlite connection and throws an error if the connection is not established
+             * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
+             * The connection and try/catch idea was originally posted by Tapas Pal
+             */
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
             {
@@ -244,18 +249,14 @@ namespace PB_JAW.Models
 
         public string timeQuery(List<MapModel> Maps)
         {
-            //variable declarations;
+            //time variable declaration;
             string time = "";
-            double eta = 0;
-            DateTime currentTime;
-            DateTime updateTime;
-            string arrivalTime;
-            string srcRoom;
-            string destRoom;
-            string srcBuild;
-            string destBuild;
 
-            //establishes the sqlite connection and throws an error if the connection is not established
+            /*
+             * establishes the sqlite connection and throws an error if the connection is not established
+             * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
+             * The connection and try/catch idea was originally posted by Tapas Pal
+             */
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
             {
@@ -278,10 +279,11 @@ namespace PB_JAW.Models
             }
             else
             {
-                srcRoom = Maps[0].RoomNumber.ToString();
-                destRoom = Maps[1].RoomNumber.ToString();
-                srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
-                destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+                //sql variable declarations
+                string srcRoom = Maps[0].RoomNumber.ToString();
+                string destRoom = Maps[1].RoomNumber.ToString();
+                string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+                string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
                 if (srcBuild == destBuild)
                 {
                     time = "Your next class is in the same building. It will not take long to arrive there, but still move quickly!";
@@ -291,28 +293,26 @@ namespace PB_JAW.Models
                     double srcToExit = exitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon);
                     double buildTime = destTimes(destRoom, destBuild, startingDetails[5], sqlCon);
                     double entToDest = campusTimes(startingDetails[5], destBuild, sqlCon);
+
                     //round the minutes up to a solid minute
                     //meant to give the user a delayed time as no one will read the seconds and it will only make them walk faster if they think it will take longer
-                    eta = Math.Ceiling(srcToExit + buildTime + entToDest);
+                    double eta = Math.Ceiling(srcToExit + buildTime + entToDest);
 
                     //grabs the users current time
-                    currentTime = DateTime.Now;
+                    DateTime currentTime = DateTime.Now;
                     //adds the travel time minutes to current time
-                    updateTime = currentTime.AddMinutes(eta);
+                    DateTime updateTime = currentTime.AddMinutes(eta);
                     //changes the updated time to a string called arrival time
-                    arrivalTime = updateTime.ToString("t");
+                    string arrivalTime = updateTime.ToString("t");
                     time = "Your expected arrival time is " + arrivalTime + ".\n";
                 }
             }
-
-            //used for testing, delete later
-            Console.WriteLine(time);
+            sqlCon.Close();
             return time;
         }
 
         double exitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
-        
             double exitTime = 0;
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum";
@@ -322,8 +322,8 @@ namespace PB_JAW.Models
             return exitTime;
         }
 
-        double destTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con){
-        
+        double destTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
+        {
             double timeToDest = 0;
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum";
@@ -333,8 +333,8 @@ namespace PB_JAW.Models
             return timeToDest;
         }
 
-        double campusTimes(string srcBuild, string destBuild, SQLiteConnection con){
-        
+        double campusTimes(string srcBuild, string destBuild, SQLiteConnection con)
+        {
             double timeToBuild = 0;
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid";
