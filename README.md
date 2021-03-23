@@ -13,6 +13,12 @@ Simply pull the project to github to run the project.
 git clone PB-JAW
 ```
 
+## Usage
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eu maximus urna. Donec faucibus justo nisl, molestie porta est fringilla id. Integer vestibulum, leo quis hendrerit maximus, sapien massa ullamcorper sem, non volutpat sem nibh vitae metus. Fusce volutpat ex vel neque vestibulum iaculis. Cras vitae lectus urna. Morbi rutrum vitae risus vitae pretium. Morbi faucibus velit nec pellentesque vestibulum. Cras dapibus vehicula elit, ac tempus felis maximus eu. Curabitur tincidunt fringilla erat sed laoreet.
+
+Vivamus eget faucibus sapien, nec ornare ex. Duis faucibus lacus erat, ut placerat ex sollicitudin nec. Sed rhoncus, dolor id rhoncus tempor, urna sem laoreet felis, nec posuere mauris ex ut arcu. Nulla efficitur enim ut quam luctus dictum. Cras sed blandit tellus, non laoreet ante. Sed ut turpis id nisl rutrum suscipit non in massa. Praesent imperdiet consequat augue, vitae fermentum elit finibus nec.
+
+
 ## Resources
 
 Component Diagram:
