@@ -26,6 +26,7 @@ def find_dict(building_dict):
 
 
 # highlights correct area
+# watermark code provided by https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
 def highlight_image(file, building_dict, room_number, name):
     font_path = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\css\\Font\\TIMES.TTF"
     # grab correct dictionary and room number
