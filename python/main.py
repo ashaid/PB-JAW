@@ -21,6 +21,8 @@ def find_dict(building_dict):
         building_dict = bec_dict
     elif building_dict == "pft":
         building_dict = pft_dict
+    elif building_dict == "loc":
+        building_dict = loc_dict
 
     return building_dict;
 
