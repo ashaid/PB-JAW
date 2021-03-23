@@ -100,7 +100,7 @@ namespace PB_JAW.Models
                 case "2":
                     details.Add("Lockett Hall");
                     details.Add("loc");
-                    details.Add("/wwwroot/template/LOCKETT.jpeg");
+                    details.Add("/wwwroot/template/LOCKETT-1.jpeg");
                     details.Add("FrmLoc");
                     details.Add("ExtLoc");
                     details.Add("TimeLoc");
