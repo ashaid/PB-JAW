@@ -1,5 +1,5 @@
 # PB-JAW Mapplication
-![pb-jaw-logo](https://user-images.githubusercontent.com/65536687/112227702-0e221200-8bfe-11eb-8824-95a18512969c.jpeg)
+![pb-jaw-logo](https://user-images.githubusercontent.com/65536687/112227788-30b42b00-8bfe-11eb-9a07-9f1dfebe7319.jpeg)
 
 
 ## About
