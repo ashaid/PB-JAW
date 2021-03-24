@@ -577,6 +577,25 @@ namespace PB_JAW.Models
             return timeToBuild;
         }
 
+        /**
+        * This method queries the building tables for both
+        * the source and destination rooms to find the roomIDs
+        * for the called room. If the room exists in the building,
+        * a true value is returned.
+        *
+        * method: CheckRoom
+        *
+        * return type: bool
+        *
+        * parameters:
+        * Maps      [List<MapModel>]        List which contains source
+        * building and destination building input from the user
+        *
+        *
+        * @author Brennen Calato
+        * @since 3/23/2021
+        *
+        */
         public bool CheckRoom(List<MapModel> Maps)
         {
             bool validRooms = false;
