@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import sys
 import os
-from pixels import bec_dict, pft_dict
+from pixels import bec_dict, pft_dict, loc_dict
 import pathlib
 
 
@@ -46,7 +46,6 @@ def find_dict(building_dict):
         building_dict = pft_dict
     elif building_dict == "loc":
         building_dict = loc_dict
-
     return building_dict;
 
 

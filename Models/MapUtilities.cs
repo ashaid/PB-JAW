@@ -102,6 +102,7 @@ namespace PB_JAW.Models
             // import main.py to run
             dynamic mod = Py.Import("main");
             // call main with [map].jpeg, [dict], [room number] [name of new image]
+            Console.WriteLine(dictionary);
             mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, roomNumber, name);
             PythonEngine.ReleaseLock(gs);
         }
@@ -132,7 +133,7 @@ namespace PB_JAW.Models
                 case "0":
                     details.Add("Business Education Complex");
                     details.Add("bec");
-                    details.Add("/wwwroot/template/BEC.jpeg");
+                    details.Add("/wwwroot/template/default/BEC.jpeg");
                     details.Add("FrmBEC");
                     details.Add("ExtBEC");
                     details.Add("TimeBEC");
@@ -140,7 +141,7 @@ namespace PB_JAW.Models
                 case "1":
                     details.Add("Patrick F. Taylor Hall");
                     details.Add("pft");
-                    details.Add("/wwwroot/template/PFT-1.jpeg");
+                    details.Add("/wwwroot/template/default/PFT-1.jpeg");
                     details.Add("FrmPFT");
                     details.Add("ExtPFT");
                     details.Add("TimePFT");
@@ -148,7 +149,7 @@ namespace PB_JAW.Models
                 case "2":
                     details.Add("Lockett Hall");
                     details.Add("loc");
-                    details.Add("/wwwroot/template/LOCKETT-1.jpeg");
+                    details.Add("/wwwroot/template/default/LOCKETT-1.jpeg");
                     details.Add("FrmLoc");
                     details.Add("ExtLoc");
                     details.Add("TimeLoc");
