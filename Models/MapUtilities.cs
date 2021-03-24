@@ -397,8 +397,6 @@ namespace PB_JAW.Models
             return directions;
         }
 
-
-
         /**
         * This method calls queries to multiple tables in the Locations.db
         * database and adds them to the users current time to make an estimated

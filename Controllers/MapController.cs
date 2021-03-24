@@ -70,14 +70,12 @@ namespace PB_JAW.Controllers
                 ModelState.AddModelError("", "Please select a building");
             }
 
+            // if room number does not exist in the database 
             if (!util.CheckRoom(templateModel.Maps)) 
             {
                 ModelState.AddModelError("", "Invalid Room Number");
             }
 
-            // if room number does not exist in the database 
-            //util.CheckRoom(templateModel.Maps);
-            // ModelState.AddModelError("", "Invalid Room Number");
             // main driver for map creation
             if (ModelState.IsValid)
             {
@@ -89,8 +87,8 @@ namespace PB_JAW.Controllers
 
                     TempData["Map0"] = fileNames[0]; // file location of first map
                     TempData["Map1"] = fileNames[1]; // file location of second map
-                    TempData["Directions"] = util.Directions(templateModel.Maps);
-                    TempData["Times"] = util.TimeQuery(templateModel.Maps);
+                    TempData["Directions"] = util.Directions(templateModel.Maps); // directions
+                    TempData["Times"] = util.TimeQuery(templateModel.Maps); // time
                 }
                 catch
                 {
@@ -98,7 +96,7 @@ namespace PB_JAW.Controllers
                 }
                 return View("Result", templateModel);
             }
-            else // if model errors out
+            else // else model errors out
             {
                 ModelState.AddModelError("", "");
                 return View("MapBuilder", templateModel);
