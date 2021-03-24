@@ -83,7 +83,7 @@ def highlight_image(file, building_dict, room_number, name):
                         (building_dict[room_number][2], building_dict[room_number][3])], (255, 0, 0, 95))
 
         # draw text, xy pixels, text, fill color, font (drawing room number on image)
-        draw.text((25, 74), "Room:" + room_number, fill='black', font=font)
+        # draw.text((25, 74), "Room:" + room_number, fill='black', font=font)
 
         # calculate x,y coordinates of text
         width, height = im.size
