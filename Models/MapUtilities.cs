@@ -109,7 +109,7 @@ namespace PB_JAW.Models
             return details;
         }
 
-        // code to create map
+        // code to create map 
         public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
             List<string> names = new List<string>();
@@ -513,6 +513,49 @@ namespace PB_JAW.Models
 
             double timeToBuild = Convert.ToDouble(cmd.ExecuteScalar());
             return timeToBuild;
+        }
+
+        public bool CheckRoom(List<MapModel> Maps)
+        {
+            bool validRooms = false;
+
+            List<string> startingDetails = new List<string>();
+            FindDetails(Maps[0].Building, startingDetails);
+            List<string> endingDetails = new List<string>();
+            FindDetails(Maps[1].Building, endingDetails);
+            string srcRoom = Maps[0].RoomNumber.ToString();
+            string destRoom = Maps[1].RoomNumber.ToString();
+            string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+            string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+            /*
+             * establishes the sqlite connection and throws an error if the connection is not established
+             * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
+             * The connection and try/catch idea was originally posted by Tapas Pal
+             */
+            SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
+            try
+            {
+                sqlCon.Open();
+                Console.WriteLine("Connection is established");
+            }
+            catch
+            {
+                Console.WriteLine("Connection not established");
+            }
+
+            using var cmd = new SQLiteCommand(sqlCon);
+            cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + srcBuild + " WHERE Room = @roomNum)";
+            cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+            int validStartRoom = Convert.ToInt32(cmd.ExecuteScalar());
+            cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + destBuild + " WHERE Room = @roomNum)";
+            cmd.Parameters.AddWithValue("@roomNum", destRoom);
+            int validDestRoom = Convert.ToInt32(cmd.ExecuteScalar());
+
+            if (validStartRoom == 1 && validDestRoom == 1) 
+            {
+                validRooms = true;
+            }
+            return validRooms;
         }
     }
 }

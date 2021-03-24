@@ -18,50 +18,78 @@ namespace PB_JAW.Controllers
             this.host = host;
         }
 
-        // using input fields create a new map template
+        /**
+         * Using input fields create a new map template
+         *
+         * method: MapBuilder
+         *
+         * return type: View
+         *
+         * @author Anthony Shaidaee
+         * @since 2/15/2021
+         *
+         */
         [HttpGet]
-        public ViewResult MapBuilder(int? numMaps)
+        public ViewResult MapBuilder()
         {
             TemplateModelMap templateModel = new TemplateModelMap();
 
-            // create first map
+            // create starting map
             MapModel start = new MapModel();
             templateModel.AddMap(start);
+            // create destination map
             MapModel destination = new MapModel();
             templateModel.AddMap(destination);
+
             return View("MapBuilder", templateModel);
         }
 
-        // create/save map and return new view for the user to see
-        //TAKES PLACE OF CreateModel() method on Map Controller Component
+        /**
+         * create/save map and return new view for the user to see
+         * goes through necessary checks to see if model is valid
+         *
+         * method: SaveMapAsync
+         *
+         * return type: Task<ViewResult>
+         *
+         * parameters:
+         * templateModel [TemplateModelMap] model with maps in it
+         *
+         * @author Anthony Shaidaee
+         * @since 2/15/2021
+         *
+         */
         [HttpPost]
         public async Task<ViewResult> SaveMapAsync(TemplateModelMap templateModel)
         {
             MapUtilities util = new MapUtilities(host);
 
+            // if user has selected "---" dropdown option
             if (templateModel.Maps[0].Building.Contains("-2") ||  templateModel.Maps[1].Building.Contains("-2"))
             {
                 ModelState.AddModelError("", "Please select a building");
             }
 
-            // if room number does not exist in the database 
-            // util.CheckRoom(templateModel.Maps[0].RoomNumber.toString() || templateModel.Maps[1].RoomNumber.toString()
-            // ModelState.AddModelError("", "Invalid Room Number");
+            if (!util.CheckRoom(templateModel.Maps)) 
+            {
+                ModelState.AddModelError("", "Invalid Room Number");
+            }
 
+            // if room number does not exist in the database 
+            //util.CheckRoom(templateModel.Maps);
+            // ModelState.AddModelError("", "Invalid Room Number");
             // main driver for map creation
             if (ModelState.IsValid)
             {
                 // code to generate template 
                 try
                 {
-                    Console.WriteLine(templateModel.ButtonClicked);
                     List<string> fileNames = new List<string>();
                     fileNames = await util.CreateMap(templateModel.Maps);
 
-                    TempData["Map0"] = fileNames[0];
-                    TempData["Map1"] = fileNames[1];
+                    TempData["Map0"] = fileNames[0]; // file location of first map
+                    TempData["Map1"] = fileNames[1]; // file location of second map
                     TempData["Directions"] = util.Directions(templateModel.Maps);
-                    //not sure if this is supposed to be here just put it here to test it
                     TempData["Times"] = util.TimeQuery(templateModel.Maps);
                 }
                 catch
@@ -70,7 +98,7 @@ namespace PB_JAW.Controllers
                 }
                 return View("Result", templateModel);
             }
-            else
+            else // if model errors out
             {
                 ModelState.AddModelError("", "");
                 return View("MapBuilder", templateModel);
