@@ -247,7 +247,7 @@ namespace PB_JAW.Models
             return directions;
         }
 
-        public string timeQuery(List<MapModel> Maps)
+        public string TimeQuery(List<MapModel> Maps)
         {
             //time variable declaration;
             string time = "";
@@ -290,9 +290,9 @@ namespace PB_JAW.Models
                 }
                 else
                 {
-                    double srcToExit = exitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon);
-                    double buildTime = destTimes(destRoom, destBuild, startingDetails[5], sqlCon);
-                    double entToDest = campusTimes(startingDetails[5], destBuild, sqlCon);
+                    double srcToExit = ExitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon);
+                    double buildTime = DestTimes(destRoom, destBuild, startingDetails[5], sqlCon);
+                    double entToDest = CampusTimes(startingDetails[5], destBuild, sqlCon);
 
                     //round the minutes up to a solid minute
                     //meant to give the user a delayed time as no one will read the seconds and it will only make them walk faster if they think it will take longer
@@ -311,36 +311,33 @@ namespace PB_JAW.Models
             return time;
         }
 
-        double exitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
+        double ExitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
-            double exitTime = 0;
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum";
             cmd.Parameters.AddWithValue("@roomNum", srcRoom);
 
-            exitTime = Convert.ToDouble(cmd.ExecuteScalar());
+            double exitTime = Convert.ToDouble(cmd.ExecuteScalar());
             return exitTime;
         }
 
-        double destTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
+        double DestTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
         {
-            double timeToDest = 0;
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum";
             cmd.Parameters.AddWithValue("@roomNum", destRoom);
 
-            timeToDest = Convert.ToDouble(cmd.ExecuteScalar());
+            double timeToDest = Convert.ToDouble(cmd.ExecuteScalar());
             return timeToDest;
         }
 
-        double campusTimes(string srcBuild, string destBuild, SQLiteConnection con)
+        double CampusTimes(string srcBuild, string destBuild, SQLiteConnection con)
         {
-            double timeToBuild = 0;
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid";
             cmd.Parameters.AddWithValue("@buildingid", destBuild);
 
-            timeToBuild = Convert.ToDouble(cmd.ExecuteScalar());
+            double timeToBuild = Convert.ToDouble(cmd.ExecuteScalar());
             return timeToBuild;
         }
     }

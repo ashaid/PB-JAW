@@ -37,17 +37,21 @@ namespace PB_JAW.Controllers
         [HttpPost]
         public async Task<ViewResult> SaveMapAsync(TemplateModelMap templateModel)
         {
-            if(templateModel.Maps[0].Building.Contains("-2") ||  templateModel.Maps[1].Building.Contains("-2"))
+            MapUtilities util = new MapUtilities(host);
+
+            if (templateModel.Maps[0].Building.Contains("-2") ||  templateModel.Maps[1].Building.Contains("-2"))
             {
                 ModelState.AddModelError("", "Please select a building");
             }
 
-            //templateModel.Maps[0].CheckStart(templateModel.Maps[0].Building);
-            
+            // if room number does not exist in the database 
+            // util.CheckRoom(templateModel.Maps[0].RoomNumber.toString() || templateModel.Maps[1].RoomNumber.toString()
+            // ModelState.AddModelError("", "Invalid Room Number");
+
+            // main driver for map creation
             if (ModelState.IsValid)
             {
-                // code to generate template map
-                MapUtilities util = new MapUtilities(host);
+                // code to generate template 
                 try
                 {
                     Console.WriteLine(templateModel.ButtonClicked);
@@ -58,7 +62,7 @@ namespace PB_JAW.Controllers
                     TempData["Map1"] = fileNames[1];
                     TempData["Directions"] = util.Directions(templateModel.Maps);
                     //not sure if this is supposed to be here just put it here to test it
-                    TempData["Times"] = util.timeQuery(templateModel.Maps);
+                    TempData["Times"] = util.TimeQuery(templateModel.Maps);
                 }
                 catch
                 {
