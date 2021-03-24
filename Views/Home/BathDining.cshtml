@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="btn-group">
+    <div class="btn-group mr-2" role="group" aria-label="First group">
+        <a class="btn btn-primary" data-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="Displays BEC info">
+            BEC Bathooms and Dining
+        </a>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Second group">
+        <a class="btn btn-primary" data-toggle="collapse" href="#collapse2" role="button" aria-expanded="false" aria-controls="Displays Lockett info">
+            Lockett Bathooms and Dining
+        </a>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Third group">
+        <a class="btn btn-primary" data-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="Displays PFT info">
+            PFT Bathooms and Dining
+        </a>
+    </div>
+</div>
+
+<div class="collapse" id="collapse1">
+    <img src="@Url.Content("~/template/bath-dining/BEC-info.jpeg")" class="img-thumbnail" alt="BEC info" />
+</div>
+
+
+<div class="collapse" id="collapse2">
+    <img src="@Url.Content("~/template/bath-dining/LOCKETT-1-info.jpeg")" class="img-thumbnail" alt="Lockett info" />
+</div>
+
+
+<div class="collapse" id="collapse3">
+    <img src="@Url.Content("~/template/bath-dining/PFT-1-info.jpeg")" class="img-thumbnail" alt="PFT info" />
+</div>

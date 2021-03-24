@@ -11,11 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\template\BEC.jpeg" />
-    <None Include="wwwroot\template\PFT-1.jpeg" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Python.Included" Version="3.7.3.13" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
   </ItemGroup>

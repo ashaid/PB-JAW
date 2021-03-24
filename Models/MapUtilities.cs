@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Python.Included;
 using Python.Runtime;
 using System.IO;
 using System.Data.SQLite;
-using System.Globalization;
 
 namespace PB_JAW.Models
 {
@@ -589,7 +587,7 @@ namespace PB_JAW.Models
         *
         * parameters:
         * Maps      [List<MapModel>]        List which contains source
-        * building and destination building input from the user
+        *                                   building and destination building input from the user
         *
         *
         * @author Brennen Calato
