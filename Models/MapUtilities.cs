@@ -458,8 +458,8 @@ namespace PB_JAW.Models
                 else
                 {
                     double srcToExit = ExitTimes(srcRoom, srcBuild, endingDetails[5], sqlCon);
-                    double buildTime = DestTimes(destRoom, destBuild, startingDetails[5], sqlCon);
-                    double entToDest = CampusTimes(startingDetails[5], destBuild, sqlCon);
+                    double entToDest = DestTimes(destRoom, destBuild, startingDetails[5], sqlCon);
+                    double buildTime = CampusTimes(startingDetails[5], endingDetails[0], sqlCon);
 
                     //round the minutes up to a solid minute
                     //meant to give the user a delayed time as no one will read the seconds and it will only make them walk faster if they think it will take longer
@@ -603,9 +603,7 @@ namespace PB_JAW.Models
             FindDetails(Maps[0].Building, startingDetails);
             List<string> endingDetails = new List<string>();
             FindDetails(Maps[1].Building, endingDetails);
-            string srcRoom = Maps[0].RoomNumber.ToString();
             string destRoom = Maps[1].RoomNumber.ToString();
-            string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
             string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
             /*
              * establishes the sqlite connection and throws an error if the connection is not established
@@ -622,18 +620,25 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine("Connection not established");
             }
-
             using var cmd = new SQLiteCommand(sqlCon);
-            cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + srcBuild + " WHERE Room = @roomNum)";
-            cmd.Parameters.AddWithValue("@roomNum", srcRoom);
-            int validStartRoom = Convert.ToInt32(cmd.ExecuteScalar());
             cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + destBuild + " WHERE Room = @roomNum)";
             cmd.Parameters.AddWithValue("@roomNum", destRoom);
             int validDestRoom = Convert.ToInt32(cmd.ExecuteScalar());
-
-            if (validStartRoom == 1 && validDestRoom == 1) 
+            if (Maps[0].Building.Contains("-1") && validDestRoom == 1)
             {
                 validRooms = true;
+            }
+            else 
+            {
+                string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+                string srcRoom = Maps[0].RoomNumber.ToString();
+                cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + srcBuild + " WHERE Room = @roomNum)";
+                cmd.Parameters.AddWithValue("@roomNum", srcRoom);
+                int validStartRoom = Convert.ToInt32(cmd.ExecuteScalar());
+                if (validStartRoom == 1 && validDestRoom == 1)
+                {
+                    validRooms = true;
+                }
             }
             return validRooms;
         }
