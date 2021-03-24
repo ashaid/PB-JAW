@@ -70,10 +70,14 @@ namespace PB_JAW.Controllers
                 ModelState.AddModelError("", "Please select a building");
             }
 
-            // if room number does not exist in the database 
-            // util.CheckRoom(templateModel.Maps[0].RoomNumber.toString() || templateModel.Maps[1].RoomNumber.toString()
-            // ModelState.AddModelError("", "Invalid Room Number");
+            if (!util.CheckRoom(templateModel.Maps)) 
+            {
+                ModelState.AddModelError("", "Invalid Room Number");
+            }
 
+            // if room number does not exist in the database 
+            //util.CheckRoom(templateModel.Maps);
+            // ModelState.AddModelError("", "Invalid Room Number");
             // main driver for map creation
             if (ModelState.IsValid)
             {
