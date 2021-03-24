@@ -154,6 +154,24 @@ namespace PB_JAW.Models
         }
 
         // calculate text directions for the user
+        /**
+        * This method calls string queries to multiple tables in the Locations.db
+        * database and adds them to a string which will detail the directions from
+        * the source room to the destination room
+        *
+        * method: Directions
+        *
+        * return type: string
+        *
+        * parameters:
+        * Maps      [List<MapModel>]        List which contains source
+        * building and destination building input from the user
+        *
+        *
+        * @author Brennen Calato
+        * @since 3/21/2021
+        *
+        */
         public string Directions(List<MapModel> Maps)
         {
             string directions = "";
@@ -210,6 +228,30 @@ namespace PB_JAW.Models
 
             return directions;
         }
+
+        /**
+        * This method queries the building table of the destination
+        * building and takes the directions from the source room to the
+        * nearest exit (nearest to destination building)
+        *
+        * method: ExitDirections
+        *
+        * return type: string
+        *
+        * parameters:
+        * srcRoom      [string]    used for database navigation
+        * 
+        * srcBuild      [string]    used for database navigation
+        * 
+        * destBuild     [string]    used for database navigation
+        * 
+        * con           [SQLiteConnection]  connects to Locations.db database
+        *
+        *
+        * @author Brennen Calato
+        * @since 3/21/2021
+        *
+        */
         string ExitDirections(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
 
@@ -223,6 +265,29 @@ namespace PB_JAW.Models
             return directions;
         }
 
+        /**
+        * This method queries the building table of the destination
+        * building and takes the directions from the destination room to the
+        * nearest exit (nearest to source building)
+        *
+        * method: DestDirections
+        *
+        * return type: string
+        *
+        * parameters:
+        * destRoom      [string]    used for database navigation
+        * 
+        * srcBuild      [string]    used for database navigation
+        * 
+        * destBuild     [string]    used for database navigation
+        * 
+        * con           [SQLiteConnection]  connects to Locations.db database
+        *
+        *
+        * @author Brennen Calato
+        * @since 3/21/2021
+        *
+        */
         string DestDirections(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
@@ -236,6 +301,27 @@ namespace PB_JAW.Models
             return directions;
         }
 
+        /**
+        * This method queries the CAMPUS table in Locations.db
+        * and takes the directions from the source building to
+        * the destination building
+        *
+        * method: CampusDirections
+        *
+        * return type: string
+        *
+        * parameters:
+        * srcBuild      [string]    used for database navigation
+        * 
+        * destBuild     [string]    used for database navigation
+        * 
+        * con           [SQLiteConnection]  connects to Locations.db database
+        *
+        *
+        * @author Brennen Calato
+        * @since 3/21/2021
+        *
+        */
         string CampusDirections(string srcBuild, string destBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
@@ -247,6 +333,26 @@ namespace PB_JAW.Models
             return directions;
         }
 
+
+
+        /**
+        * This method calls queries to multiple tables in the Locations.db
+        * database and adds them to the users current time to make an estimated
+        * time of arrival
+        *
+        * method: TimeQuery
+        *
+        * return type: string
+        *
+        * parameters:
+        * Maps      [List<MapModel>]        List which contains source
+        * building and destination building input from the user
+        *
+        *
+        * @author Joshua Rovira
+        * @since 3/21/2021
+        *
+        */
         public string TimeQuery(List<MapModel> Maps)
         {
             //time variable declaration;
@@ -311,6 +417,29 @@ namespace PB_JAW.Models
             return time;
         }
 
+        /**
+        * This method queries the building table of the source
+        * building and takes the time from the source room to the
+        * nearest exit (nearest to destination building)
+        *
+        * method: ExitTimes
+        *
+        * return type: double
+        *
+        * parameters:
+        * srcRoom       [string]    used for database navigation
+        * 
+        * srcBuild      [string]    used for database navigation
+        * 
+        * destBuild     [string]    used for database navigation
+        * 
+        * con           [SQLiteConnection]  connects to Locations.db database
+        *
+        *
+        * @author Joshua Rovira
+        * @since 3/21/2021
+        *
+        */
         double ExitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
@@ -321,6 +450,29 @@ namespace PB_JAW.Models
             return exitTime;
         }
 
+        /**
+        * This method queries the building table of the destination
+        * building and takes the time from the destination room to the
+        * nearest exit (nearest to source building)
+        *
+        * method: DestTimes
+        *
+        * return type: double
+        *
+        * parameters:
+        * destRoom      [string]    used for database navigation
+        * 
+        * srcBuild      [string]    used for database navigation
+        * 
+        * destBuild     [string]    used for database navigation
+        * 
+        * con           [SQLiteConnection]  connects to Locations.db database
+        *
+        *
+        * @author Joshua Rovira
+        * @since 3/21/2021
+        *
+        */
         double DestTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
@@ -331,6 +483,28 @@ namespace PB_JAW.Models
             return timeToDest;
         }
 
+        /**
+        * This method queries the CAMPUS table
+        * and takes the time from the source building to 
+        * the destination building
+        *
+        * method: CampusTimes
+        *
+        * return type: double
+        *
+        * parameters:
+        * 
+        * srcBuild      [string]    used for database navigation
+        * 
+        * destBuild     [string]    used for database navigation
+        * 
+        * con           [SQLiteConnection]  connects to Locations.db database
+        *
+        *
+        * @author Joshua Rovira
+        * @since 3/21/2021
+        *
+        */
         double CampusTimes(string srcBuild, string destBuild, SQLiteConnection con)
         {
             using var cmd = new SQLiteCommand(con);
