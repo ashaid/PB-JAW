@@ -5,17 +5,40 @@ from pixels import bec_dict, pft_dict
 import pathlib
 
 
-# open image
+# This method opens an image
+#
+# return: new_image
+#
+# parameters:
+# path              image location
+# 
+# @author Anthony Shaidaee
 def open_image(path):
     new_image = Image.open(path)
     return new_image
 
 
-# save image
+# This method saves the image
+#
+# return type: void
+#
+# parameters:
+# image             image
+# path              path to save
+# 
+# @author Anthony Shaidaee
 def save_image(image, path):
     image.save(path, "JPEG")
 
 
+# This method grabs the correct building dictionary
+#
+# return: building_dict
+#
+# parameters:
+# building_dict     corresponding dictionary in pixels.py
+# 
+# @author Anthony Shaidaee
 def find_dict(building_dict):
     if building_dict == "bec":
         building_dict = bec_dict
@@ -27,7 +50,18 @@ def find_dict(building_dict):
     return building_dict;
 
 
-# highlights correct area
+# This method highlights the image using the corresponding pixels,
+# adds a watermark, and prints out the room number on to the image.
+#
+# return type: void
+#
+# parameters:
+# file              image location
+# building_dict     corresponding dictionary in pixels.py
+# room_number       building room number
+# name              name of new file to be saved
+# 
+# @author Anthony Shaidaee
 # watermark code provided by https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
 def highlight_image(file, building_dict, room_number, name):
     font_path = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\css\\Font\\TIMES.TTF"
@@ -73,6 +107,18 @@ def highlight_image(file, building_dict, room_number, name):
     print(f"\t* Saved new file at {cd} *")
 
 
+# This method prints a greeter string to the console
+# and calls highlight_image to begin the image processing 
+#
+# return type: void
+#
+# parameters:
+# file              image location
+# building_dict     corresponding dictionary in pixels.py
+# room_number       building room number
+# name              name of new file to be saved
+# 
+# @author Anthony Shaidaee
 def main(file, building_dict, room_number, name):
     print("\t**********************************************")
     print("\t**** Greeter - STARTED PYTHON FILE CALL. *****")
