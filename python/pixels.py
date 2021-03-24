@@ -1,3 +1,6 @@
+# Dict of all pixels for the building Lockett
+# @author Joshua Dufrechou
+# @since 3/22/2021
 loc_dict = {
         "139":[448, 130, 531, 203],
         "141":[535, 129, 597, 203],
@@ -33,7 +36,9 @@ loc_dict = {
         "136":[1235, 270, 1368, 473],
         "138":[1374, 270, 1509, 472],
 }
-
+# Dict of all pixels for the building PFT
+# @author Joshua Dufrechou
+# @since 3/16/2021
 pft_dict = {
      	"1367":[250, 175, 432, 254],
         "1367A":[325, 256, 374, 282],
@@ -109,7 +114,9 @@ pft_dict = {
         "1340A":[987, 382, 1025, 440],
 }
 
-
+#Dict of all pixels for the building BEC
+# @author Joshua Dufrechou
+# @since 3/12/2021
 bec_dict = {
     "1620": [135, 188, 339, 306],
     "1645": [342, 209, 375, 269],
