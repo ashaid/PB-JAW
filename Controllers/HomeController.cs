@@ -11,6 +11,7 @@ namespace PB_JAW.Controllers
 {
     public class HomeController : Controller
     {
+        // default .NET methods for home controller
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
