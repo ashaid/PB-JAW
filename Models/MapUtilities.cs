@@ -19,6 +19,18 @@ namespace PB_JAW.Models
             this.host = host;
         }
 
+        /**
+         * This method initializes python and returns the pointer.
+         * Also protection against running multiple python initializations.
+         *
+         * method: StartPython()
+         *
+         * return type: Task<IntPtr>
+         *
+         * @author Anthony Shaidaee
+         * @since 3/1/2021
+         *
+         */
         static async Task<IntPtr> StartPython()
         {
             Installer.InstallPath = Path.GetFullPath(".");
@@ -53,7 +65,27 @@ namespace PB_JAW.Models
             return gs;
         }
 
-        // code to find image corresponding to user input
+        /**
+         * This method takes the template path, dictionary,
+         * room number, name of new file, and python pointer
+         * and calls the corresponding python script to actually
+         * create the new images
+         *
+         * method: CreateImage
+         *
+         * return type: void
+         *
+         * parameters:
+         * templatePath      [string]        path to template
+         * dictionary        [string]        correct python dictionary for building
+         * roomNumber        [string]        room number 
+         * name              [string]        name of new image
+         * gs                [IntPtr]        pointer to python intialization
+         *
+         * @author Anthony Shaidaee
+         * @since 3/1/2021
+         *
+         */
         void CreateImage(string templatePath, string dictionary, string roomNumber, string name, IntPtr gs)
         {
             // string cleaning
@@ -76,6 +108,24 @@ namespace PB_JAW.Models
             PythonEngine.ReleaseLock(gs);
         }
 
+        /**
+         * This method takes a building number and an empty list
+         * and returns the lsit filled with the name of building,
+         * dictionary name, template path, from and src fields, and
+         * time field.
+         *
+         * method: FindDetails
+         *
+         * return type: List<string>
+         *
+         * parameters:
+         * BuildingNumber      [string]        building number
+         * details             [List<string>]  array to be filled out with correct details
+         *
+         * @author Anthony Shaidaee
+         * @since 3/23/2021
+         *
+         */
         public List<string> FindDetails(string BuildingNumber, List<string> details)
         {
 
@@ -109,7 +159,22 @@ namespace PB_JAW.Models
             return details;
         }
 
-        // code to create map 
+        /**
+         * This method takes the template model maps and converts to
+         * corresponding details to create the maps. Returns a list
+         * of the created file locations to be displayed to the user.
+         *
+         * method: CreateMap
+         *
+         * return type: Task<List<string>
+         *
+         * parameters:
+         * Maps      [List<MapModel>]        list of maps
+         *
+         * @author Anthony Shaidaee
+         * @since 3/23/2021
+         *
+         */
         public async Task<List<string>> CreateMap(List<MapModel> Maps)
         {
             List<string> names = new List<string>();
@@ -153,7 +218,6 @@ namespace PB_JAW.Models
             return names;
         }
 
-        // calculate text directions for the user
         /**
         * This method calls string queries to multiple tables in the Locations.db
         * database and adds them to a string which will detail the directions from
