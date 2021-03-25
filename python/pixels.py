@@ -1,4 +1,4 @@
-# Dict of all pixels for the building Lockett
+# Dict of all room pixels for the building Lockett
 # @author Joshua Dufrechou
 # @since 3/22/2021
 loc_dict = {
@@ -36,7 +36,7 @@ loc_dict = {
         "136":[1235, 270, 1368, 473],
         "138":[1374, 270, 1509, 472],
 }
-# Dict of all pixels for the building PFT
+# Dict of all room pixels for the building PFT
 # @author Joshua Dufrechou
 # @since 3/16/2021
 pft_dict = {
@@ -116,7 +116,7 @@ pft_dict = {
         "1206":[988, 753, 1076, 899],
 }
 
-#Dict of all pixels for the building BEC
+# Dict of all room pixels for the building BEC
 # @author Joshua Dufrechou
 # @since 3/12/2021
 bec_dict = {
