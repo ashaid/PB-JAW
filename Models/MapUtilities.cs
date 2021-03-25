@@ -231,7 +231,7 @@ namespace PB_JAW.Models
         * building and destination building input from the user
         *
         *
-        * @author Brennen Calato
+        * @author Brennen Calato and Josh Rovira
         * @since 3/21/2021
         *
         */
@@ -302,16 +302,16 @@ namespace PB_JAW.Models
         * return type: string
         *
         * parameters:
-        * srcRoom      [string]    used for database navigation
+        * srcRoom       [string]    the source room, used for database navigation
         * 
-        * srcBuild      [string]    used for database navigation
+        * srcBuild      [string]    the source building, used for database navigation
         * 
-        * destBuild     [string]    used for database navigation
+        * destBuild     [string]    the destination building, used for database navigation
         * 
         * con           [SQLiteConnection]  connects to Locations.db database
         *
         *
-        * @author Brennen Calato
+        * @author Brennen Calato and Josh Rovira
         * @since 3/21/2021
         *
         */
@@ -338,16 +338,16 @@ namespace PB_JAW.Models
         * return type: string
         *
         * parameters:
-        * destRoom      [string]    used for database navigation
+        * destRoom      [string]    the destination room, used for database navigation
         * 
-        * srcBuild      [string]    used for database navigation
+        * srcBuild      [string]    the source building, used for database navigation
         * 
-        * destBuild     [string]    used for database navigation
+        * destBuild     [string]    the destination building, used for database navigation
         * 
         * con           [SQLiteConnection]  connects to Locations.db database
         *
         *
-        * @author Brennen Calato
+        * @author Brennen Calato and Josh Rovira
         * @since 3/21/2021
         *
         */
@@ -374,14 +374,14 @@ namespace PB_JAW.Models
         * return type: string
         *
         * parameters:
-        * srcBuild      [string]    used for database navigation
+        * srcBuild      [string]    the source building, used for database navigation
         * 
-        * destBuild     [string]    used for database navigation
+        * destBuild     [string]    the destinatioon building, used for database navigation
         * 
         * con           [SQLiteConnection]  connects to Locations.db database
         *
         *
-        * @author Brennen Calato
+        * @author Brennen Calato and Josh Rovira
         * @since 3/21/2021
         *
         */
@@ -407,10 +407,10 @@ namespace PB_JAW.Models
         *
         * parameters:
         * Maps      [List<MapModel>]        List which contains source
-        * building and destination building input from the user
+        *                                   user input foor room numbers and buildings
         *
         *
-        * @author Joshua Rovira
+        * @author Joshua Rovira and Brennen Calato
         * @since 3/21/2021
         *
         */
@@ -488,16 +488,16 @@ namespace PB_JAW.Models
         * return type: double
         *
         * parameters:
-        * srcRoom       [string]    used for database navigation
+        * srcRoom       [string]    the source room, used for database navigation
         * 
-        * srcBuild      [string]    used for database navigation
+        * srcBuild      [string]    the source build, used for database navigation
         * 
-        * destBuild     [string]    used for database navigation
+        * destBuild     [string]    the destination building, used for database navigation
         * 
         * con           [SQLiteConnection]  connects to Locations.db database
         *
         *
-        * @author Joshua Rovira
+        * @author Joshua Rovira and Brennen Calato
         * @since 3/21/2021
         *
         */
@@ -521,16 +521,16 @@ namespace PB_JAW.Models
         * return type: double
         *
         * parameters:
-        * destRoom      [string]    used for database navigation
+        * destRoom      [string]    the destination room, used for query
         * 
-        * srcBuild      [string]    used for database navigation
+        * srcBuild      [string]    the source building, used for query
         * 
-        * destBuild     [string]    used for database navigation
+        * destBuild     [string]    the destination building, used for query
         * 
         * con           [SQLiteConnection]  connects to Locations.db database
         *
         *
-        * @author Joshua Rovira
+        * @author Joshua Rovira and Brennen Calato
         * @since 3/21/2021
         *
         */
@@ -555,14 +555,14 @@ namespace PB_JAW.Models
         *
         * parameters:
         * 
-        * srcBuild      [string]    used for database navigation
+        * srcBuild      [string]    the source building, used for database navigation
         * 
-        * destBuild     [string]    used for database navigation
+        * destBuild     [string]    the destination building, used for database navigation
         * 
         * con           [SQLiteConnection]  connects to Locations.db database
         *
         *
-        * @author Joshua Rovira
+        * @author Joshua Rovira and Brennen Calato
         * @since 3/21/2021
         *
         */
@@ -587,8 +587,7 @@ namespace PB_JAW.Models
         * return type: bool
         *
         * parameters:
-        * Maps      [List<MapModel>]        List which contains source
-        *                                   building and destination building input from the user
+        * Maps      [List<MapModel>]        List which contains room and building input from the user
         *
         *
         * @author Brennen Calato
@@ -640,6 +639,7 @@ namespace PB_JAW.Models
                     validRooms = true;
                 }
             }
+            sqlCon.Close();
             return validRooms;
         }
     }
