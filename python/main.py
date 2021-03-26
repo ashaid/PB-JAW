@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import sys
 import os
-from pixels import bec_dict, pft_dict, loc_dict
+from pixels import *
 import pathlib
 
 
