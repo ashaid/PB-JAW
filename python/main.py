@@ -46,6 +46,8 @@ def find_dict(building_dict):
         building_dict = pft_dict
     elif building_dict == "loc":
         building_dict = loc_dict
+    elif building_dict == "loc2":
+        building_dict == loc2_dict
     return building_dict;
 
 

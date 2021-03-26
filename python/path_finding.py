@@ -21,6 +21,8 @@ def edge_list_getter(building):
             (18, 19, 2), (19, 1220, 1), (19, 1225, 1), (17, 21, 3), (21, 22, 2), (22, 1120, 1),
             (22, 20, 2), (20, 1125, 1), (9999, 5, 3)
         ])
+    if building == "locb":
+        edge_list = np.array([])
     # elif building == "pft-1":
 
     # elif building == "loc-1":
@@ -41,7 +43,7 @@ def main(path, building, start, dest):
     dist_matrix, predecessors = shortest_path(adjacency, directed=False, method='auto', return_predecessors=True)
     
     # grab json data
-    with open(str(pathlib.Path().absolute()) + f"\\python\\pixels.json") as f:
+    with open(str(pathlib.Path().absolute()) + f"\\python\\" + building + ".json") as f:
         data = json.load(f)
     # fill out desired nodes
 
