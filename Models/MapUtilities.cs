@@ -142,6 +142,7 @@ namespace PB_JAW.Models
                     details.Add("FrmBEC");
                     details.Add("ExtBEC");
                     details.Add("TimeBEC");
+                    details.Add("BEC");
                     break;
                 case "1":
                     details.Add("Patrick F. Taylor Hall");
@@ -150,6 +151,7 @@ namespace PB_JAW.Models
                     details.Add("FrmPFT");
                     details.Add("ExtPFT");
                     details.Add("TimePFT");
+                    details.Add("PFT");
                     break;
                 case "2":
                     details.Add("Lockett Hall");
@@ -158,7 +160,36 @@ namespace PB_JAW.Models
                     details.Add("FrmLoc");
                     details.Add("ExtLoc");
                     details.Add("TimeLoc");
+                    details.Add("LOC");
                     break;
+                case "3":
+                    details.Add("Patrick F. Taylor Hall");
+                    details.Add("pft2");
+                    details.Add("/wwwroot/template/default/PFT-2.jpeg");
+                    details.Add("FrmPFT");
+                    details.Add("ExtPFT");
+                    details.Add("TimePFT");
+                    details.Add("PFT");
+                    break;
+                case "4":
+                    details.Add("Lockett Hall");
+                    details.Add("loc2");
+                    details.Add("/wwwroot/template/default/Lockett-2.jpeg");
+                    details.Add("FrmLoc");
+                    details.Add("ExtLoc");
+                    details.Add("TimeLoc");
+                    details.Add("LOC");
+                    break;
+                case "5":
+                    details.Add("Lockett Hall");
+                    details.Add("locb");
+                    details.Add("/wwwroot/template/default/LockettBasement.jpeg");
+                    details.Add("FrmLoc");
+                    details.Add("ExtLoc");
+                    details.Add("TimeLoc");
+                    details.Add("LOC");
+                    break;
+
             }
             return details;
         }
@@ -276,8 +307,8 @@ namespace PB_JAW.Models
                 // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
                 srcRoom = Maps[0].RoomNumber.ToString();
                 destRoom = Maps[1].RoomNumber.ToString();
-                srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
-                destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+                srcBuild = startingDetails[6].Replace("\n", String.Empty);
+                destBuild = endingDetails[6].Replace("\n", String.Empty);
                 if (srcBuild == destBuild)
                 {
                     directions = "You are already in the building. Please refer to the map in order to find your classroom, it is nearby!";
@@ -454,8 +485,8 @@ namespace PB_JAW.Models
                 //sql variable declarations
                 string srcRoom = Maps[0].RoomNumber.ToString();
                 string destRoom = Maps[1].RoomNumber.ToString();
-                string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
-                string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+                string srcBuild = startingDetails[6].Replace("\n", String.Empty);
+                string destBuild = endingDetails[6].Replace("\n", String.Empty);
                 if (srcBuild == destBuild)
                 {
                     time = "Your next class is in the same building. It will not take long to arrive there, but still move quickly!";
@@ -608,7 +639,7 @@ namespace PB_JAW.Models
             List<string> endingDetails = new List<string>();
             FindDetails(Maps[1].Building, endingDetails);
             string destRoom = Maps[1].RoomNumber.ToString();
-            string destBuild = endingDetails[1].ToUpper().Replace("\n", String.Empty);
+            string destBuild = endingDetails[6].Replace("\n", String.Empty);
             /*
              * establishes the sqlite connection and throws an error if the connection is not established
              * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
@@ -634,7 +665,7 @@ namespace PB_JAW.Models
             }
             else 
             {
-                string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
+                string srcBuild = startingDetails[6].Replace("\n", String.Empty);
                 string srcRoom = Maps[0].RoomNumber.ToString();
                 if (srcRoom == destRoom) 
                 {
@@ -692,21 +723,21 @@ namespace PB_JAW.Models
         public Dictionary<string, int> Nodes(string build) 
         {
             Dictionary<string, int> findNode = new Dictionary<string, int>();
-            if (build == "bec")
+            if (build == "BEC")
             {
                 findNode.Add("FrmPFT", 9999);
                 findNode.Add("FrmLoc", 9999);
                 findNode.Add("ExtPFT", 9999);
                 findNode.Add("ExtLoc", 9999);
             }
-            else if (build == "loc")
+            else if (build == "LOC")
             {
                 findNode.Add("FrmPFT", -1);
                 findNode.Add("FrmBEC", 9999);
                 findNode.Add("ExtPFT", -1);
                 findNode.Add("ExtBEC", 9999);
             }
-            else if (build == "pft")
+            else if (build == "PFT")
             {
                 findNode.Add("FrmBEC", 9999);
                 findNode.Add("FrmLoc", -2);
