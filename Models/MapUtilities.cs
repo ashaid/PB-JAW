@@ -208,7 +208,6 @@ namespace PB_JAW.Models
 
                     // add new file to names array
                     names.Add(name);
-
                     details.Clear();
                 }
                 
@@ -285,6 +284,7 @@ namespace PB_JAW.Models
                     string campDirections = CampusDirections(startingDetails[3], endingDetails[0], sqlCon);
                     directions = extDirections + campDirections + toDirections;
                 }
+
             }
             //closes sqlite connection
             sqlCon.Close();
@@ -641,6 +641,70 @@ namespace PB_JAW.Models
             }
             sqlCon.Close();
             return validRooms;
+        }
+
+        public async Task CreatePath(List<MapModel> Maps, string path1, string path2)
+        {
+            IntPtr gs = await StartPython();
+            List<string> startingDetails = new List<string>();
+            FindDetails(Maps[0].Building, startingDetails);
+            List<string> endingDetails = new List<string>();
+            FindDetails(Maps[1].Building, endingDetails);
+            string srcBuild = startingDetails[1];
+            string destBuild = endingDetails[1];
+
+            int srcRoom = Maps[0].RoomNumber;
+            int destRoom = Maps[1].RoomNumber;
+            if (srcBuild == destBuild)
+            {
+                PythonPath(path1, srcBuild, srcRoom, destRoom);
+            }
+            else 
+            {
+                //grab source building and source room
+                //set dest room to default exit
+                //Call PythonPath
+                Dictionary <string, int> findExitNode = Nodes(srcBuild);
+                destRoom = findExitNode[endingDetails[4]];
+                PythonPath(path1, srcBuild, srcRoom, destRoom);
+                //grab destination building
+                //set source room to default entrance
+                //set dest room to original destRoom
+                //Call PythonPath
+                Dictionary<string, int> findEntNode = Nodes(destBuild);
+                srcRoom = findEntNode[startingDetails[3]];
+                destRoom = Maps[1].RoomNumber;
+                PythonPath(path2, destBuild, srcRoom, destRoom);
+            }
+
+        }
+
+        public Dictionary<string, int> Nodes(string build) 
+        {
+            Dictionary<string, int> findNode = new Dictionary<string, int>();
+            if (build == "bec")
+            {
+                findNode.Add("FrmPFT", -1);
+                findNode.Add("FrmLoc", -1);
+                findNode.Add("ExtPFT", -1);
+                findNode.Add("ExtLoc", -1);
+            }
+            else if (build == "loc")
+            {
+                findNode.Add("FrmPFT", -1);
+                findNode.Add("FrmBEC", -1);
+                findNode.Add("ExtPFT", -1);
+                findNode.Add("ExtBEC", -1);
+            }
+            else if (build == "pft")
+            {
+                findNode.Add("FrmBEC", -1);
+                findNode.Add("FrmLoc", -2);
+                findNode.Add("ExtBEC", -1);
+                findNode.Add("ExtLoc", -2);
+            }
+
+            return findNode;
         }
     }
 }
