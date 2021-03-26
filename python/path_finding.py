@@ -6,6 +6,7 @@ from PIL import ImageDraw, Image
 import numpy as np
 from sknetwork.utils import edgelist2adjacency
 import os
+import pathlib
 
 
 def edge_list_getter(building):
@@ -38,9 +39,9 @@ def main(path, building, start, dest):
     adjacency = csr_matrix(adjacency)
 
     dist_matrix, predecessors = shortest_path(adjacency, directed=False, method='auto', return_predecessors=True)
-
+    
     # grab json data
-    with open("D:\Repos\pb-jaw\python\pixels.json") as f:
+    with open(str(pathlib.Path().absolute()) + f"\\python\\pixels.json") as f:
         data = json.load(f)
     # fill out desired nodes
 
