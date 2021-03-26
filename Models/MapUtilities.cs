@@ -40,6 +40,9 @@ namespace PB_JAW.Models
             {
                 Installer.TryInstallPip();
                 Installer.PipInstallModule("pillow");
+                Installer.PipInstallModule("scipy");
+                Installer.PipInstallModule("numpy");
+                Installer.PipInstallModule("scikit-network");
                 PythonEngine.Initialize();
                 PythonEngine.BeginAllowThreads();
             }
@@ -52,9 +55,11 @@ namespace PB_JAW.Models
                 //Console.WriteLine("### Current working directory:\n\t" + os.getcwd());
                 //Console.WriteLine("### PythonPath:\n\t" + PythonEngine.PythonPath);
 
-                // pillow version
                 dynamic pillow = Py.Import("PIL");
                 //Console.WriteLine("Pillow version: " + pillow.__version__);
+                dynamic scipy = Py.Import("scipy");
+                dynamic np = Py.Import("numpy");
+                dynamic sknetwork = Py.Import("sknetwork");
             }
             catch (PythonException pe)
             {
@@ -657,7 +662,8 @@ namespace PB_JAW.Models
             int destRoom = Maps[1].RoomNumber;
             if (srcBuild == destBuild)
             {
-                PythonPath(path1, srcBuild, srcRoom, destRoom);
+                PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
+                Console.WriteLine("here");
             }
             else 
             {
@@ -666,7 +672,7 @@ namespace PB_JAW.Models
                 //Call PythonPath
                 Dictionary <string, int> findExitNode = Nodes(srcBuild);
                 destRoom = findExitNode[endingDetails[4]];
-                PythonPath(path1, srcBuild, srcRoom, destRoom);
+                PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
                 //grab destination building
                 //set source room to default entrance
                 //set dest room to original destRoom
@@ -674,7 +680,7 @@ namespace PB_JAW.Models
                 Dictionary<string, int> findEntNode = Nodes(destBuild);
                 srcRoom = findEntNode[startingDetails[3]];
                 destRoom = Maps[1].RoomNumber;
-                PythonPath(path2, destBuild, srcRoom, destRoom);
+                PythonPath(path2, destBuild, srcRoom, destRoom, gs);
             }
 
         }
@@ -684,27 +690,59 @@ namespace PB_JAW.Models
             Dictionary<string, int> findNode = new Dictionary<string, int>();
             if (build == "bec")
             {
-                findNode.Add("FrmPFT", -1);
-                findNode.Add("FrmLoc", -1);
-                findNode.Add("ExtPFT", -1);
-                findNode.Add("ExtLoc", -1);
+                findNode.Add("FrmPFT", 9999);
+                findNode.Add("FrmLoc", 9999);
+                findNode.Add("ExtPFT", 9999);
+                findNode.Add("ExtLoc", 9999);
             }
             else if (build == "loc")
             {
                 findNode.Add("FrmPFT", -1);
-                findNode.Add("FrmBEC", -1);
+                findNode.Add("FrmBEC", 9999);
                 findNode.Add("ExtPFT", -1);
-                findNode.Add("ExtBEC", -1);
+                findNode.Add("ExtBEC", 9999);
             }
             else if (build == "pft")
             {
-                findNode.Add("FrmBEC", -1);
+                findNode.Add("FrmBEC", 9999);
                 findNode.Add("FrmLoc", -2);
-                findNode.Add("ExtBEC", -1);
+                findNode.Add("ExtBEC", 9999);
                 findNode.Add("ExtLoc", -2);
             }
 
             return findNode;
         }
+
+        void PythonPath(string templatePath, string dictionary, int srcRoom, int destRoom, IntPtr gs)
+        {
+            // string cleaning
+            string path = "/python/";
+            path = host.ContentRootFileProvider.GetFileInfo(path).PhysicalPath;
+            path = path.Replace('\\', '/');
+
+            // set PYTHON global variable to look for script
+            int returnValue = PythonEngine.RunSimpleString($"import sys;sys.path.insert(1, '{path}');");
+            if (returnValue != 0)
+            {
+                //throw exception or other failure handling
+                Console.WriteLine("!!!!!! incorrect PATH setting !!!!!!!!!!!!");
+            }
+
+            // import main.py to run
+            dynamic mod = Py.Import("path_finding");
+            // call main with [map].jpeg, [dict], [room number] [name of new image]
+
+            // path, building, start=1615, dest=1615
+            try
+            {
+                mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, srcRoom, destRoom);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
+            }
+            
+            PythonEngine.ReleaseLock(gs);
+        }
+
     }
 }
