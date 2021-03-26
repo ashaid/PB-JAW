@@ -9,8 +9,9 @@
 Select Building and Enter Room Number
 <div class="align-content-lg-center">
     <form asp-action="SaveMap">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-inline">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 @Html.DropDownListFor(
                 model => model.Maps[0].Building,
@@ -57,9 +58,9 @@ Select Building and Enter Room Number
                 <span asp-validation-for="@Model.Maps[1].RoomNumber" class="text-danger"></span>
             </div>
         </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn-lg" />
-            </div>
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn-lg" />
+        </div>
     </form>
 </div>
 
