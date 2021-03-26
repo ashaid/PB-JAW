@@ -636,6 +636,10 @@ namespace PB_JAW.Models
             {
                 string srcBuild = startingDetails[1].ToUpper().Replace("\n", String.Empty);
                 string srcRoom = Maps[0].RoomNumber.ToString();
+                if (srcRoom == destRoom) 
+                {
+                    return validRooms;
+                }
                 cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + srcBuild + " WHERE Room = @roomNum)";
                 cmd.Parameters.AddWithValue("@roomNum", srcRoom);
                 int validStartRoom = Convert.ToInt32(cmd.ExecuteScalar());

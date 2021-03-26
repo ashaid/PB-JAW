@@ -68,7 +68,7 @@ def main(path, building, start, dest):
             draw.line([(nodes[i].x1 + nodes[i].x2) / 2, (nodes[i].y1 + nodes[i].y2) / 2,
                        (nodes[i + 1].x1 + nodes[i + 1].x2) / 2, (nodes[i + 1].y1 + nodes[i + 1].y2) / 2],
                       fill="black", width=5)
-    img.show()
+    # img.show()
     img.save(path, "JPEG")
 
 
