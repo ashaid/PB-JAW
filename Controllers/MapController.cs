@@ -89,6 +89,7 @@ namespace PB_JAW.Controllers
                     TempData["Map1"] = fileNames[1]; // file location of second map
                     TempData["Directions"] = util.Directions(templateModel.Maps); // directions
                     TempData["Times"] = util.TimeQuery(templateModel.Maps); // time
+                    await util.CreatePath(templateModel.Maps, fileNames[0], fileNames[1]);
                 }
                 catch
                 {
