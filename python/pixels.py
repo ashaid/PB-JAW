@@ -84,6 +84,18 @@ loc2_dict = {
         "204":[327, 887, 415, 977],
         "202":[240, 890, 317, 977],
 }
+# Dict of all room pixels for the basement of Lockett
+# @author Joshua Dufrechou
+# @since 3/25/2021
+locb_dict = {
+        "B15":[80, 4, 755, 194],
+        "B9":[6, 370, 312, 643],
+        "B5":[96, 828, 762, 1022],
+        "B6":[1196, 829, 1830, 1021],
+        "B10":[1628, 387, 1931, 638],
+        "B16":[1201, 8, 1851, 190],
+        "B2":[644, 402, 1352, 588],
+}
 # Dict of all room pixels for the building PFT
 # @author Joshua Dufrechou
 # @since 3/16/2021
@@ -163,7 +175,6 @@ pft_dict = {
         "1256":[905, 687, 981, 836],
         "1206":[988, 753, 1076, 899],
 }
-
 # Dict of all room pixels for the building BEC
 # @author Joshua Dufrechou
 # @since 3/12/2021
