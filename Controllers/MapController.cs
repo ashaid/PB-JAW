@@ -95,7 +95,7 @@ namespace PB_JAW.Controllers
                     }
                     catch 
                     {
-                        Console.WriteLine("No Starting Location");
+                        Console.WriteLine("No Starting Location or Nodes Not Available");
                     }
                     //await util.CreatePath(templateModel.Maps, fileNames[0] + "wwwroot/created/" , fileNames[1]);
                 }
