@@ -695,10 +695,13 @@ namespace PB_JAW.Models
 
             int srcRoom = Maps[0].RoomNumber;
             int destRoom = Maps[1].RoomNumber;
+
+
             if (srcBuild == destBuild)
             {
                 PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
-                Console.WriteLine("here");
+                IntPtr gs2 = await StartPython();
+                PythonPath(path2, srcBuild, srcRoom, destRoom, gs2);
             }
             else 
             {
@@ -715,7 +718,8 @@ namespace PB_JAW.Models
                 Dictionary<string, int> findEntNode = Nodes(destBuild);
                 srcRoom = findEntNode[startingDetails[3]];
                 destRoom = Maps[1].RoomNumber;
-                PythonPath(path2, destBuild, srcRoom, destRoom, gs);
+                IntPtr gs2 = await StartPython();
+                PythonPath(path2, destBuild, srcRoom, destRoom, gs2);
             }
 
         }
@@ -723,21 +727,21 @@ namespace PB_JAW.Models
         public Dictionary<string, int> Nodes(string build) 
         {
             Dictionary<string, int> findNode = new Dictionary<string, int>();
-            if (build == "BEC")
+            if (build == "bec")
             {
                 findNode.Add("FrmPFT", 9999);
                 findNode.Add("FrmLoc", 9999);
                 findNode.Add("ExtPFT", 9999);
                 findNode.Add("ExtLoc", 9999);
             }
-            else if (build == "LOC")
+            else if (build == "loc")
             {
                 findNode.Add("FrmPFT", -1);
                 findNode.Add("FrmBEC", 9999);
                 findNode.Add("ExtPFT", -1);
                 findNode.Add("ExtBEC", 9999);
             }
-            else if (build == "PFT")
+            else if (build == "pft")
             {
                 findNode.Add("FrmBEC", 9999);
                 findNode.Add("FrmLoc", -2);
