@@ -107,7 +107,6 @@ namespace PB_JAW.Models
             // import main.py to run
             dynamic mod = Py.Import("main");
             // call main with [map].jpeg, [dict], [room number] [name of new image]
-            Console.WriteLine(dictionary);
             mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, roomNumber, name);
             PythonEngine.ReleaseLock(gs);
         }
@@ -855,11 +854,11 @@ namespace PB_JAW.Models
 
             // import main.py to run
             dynamic mod = Py.Import("path_finding");
-            // call main with [map].jpeg, [dict], [room number] [name of new image]
-
-            // path, building, start=1615, dest=1615
+            dynamic mod2 = Py.Import("main");
+            
             try
             {
+                // path, building, start=1615, dest=1615
                 mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, srcRoom, destRoom);
             }
             catch (Exception e)
