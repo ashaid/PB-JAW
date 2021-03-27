@@ -1,12 +1,13 @@
 ﻿import json
-from pixels import bec_dict
+from pixels import *
 from scipy.sparse.csgraph import shortest_path
 from scipy.sparse import csr_matrix
-from PIL import ImageDraw, Image
+from PIL import ImageDraw, Image, ImageFont
 import numpy as np
 from sknetwork.utils import edgelist2adjacency
 import os
 import pathlib
+import sys
 
 
 def edge_list_getter(building):
@@ -33,15 +34,15 @@ def edge_list_getter(building):
 # calculate shortest path nodes
 # draw nodes
 # draw a line connecting nodes
-def main(path, building, start, dest):
-
+def path_finder(path, new_name, building, start, dest):
+    print(path)
     edge_list = edge_list_getter(building)
 
     adjacency = edgelist2adjacency(edge_list, undirected=True)
     adjacency = csr_matrix(adjacency)
 
     dist_matrix, predecessors = shortest_path(adjacency, directed=False, method='auto', return_predecessors=True)
-    
+
     # grab json data
     with open(str(pathlib.Path().absolute()) + f"\\python\\" + building + ".json") as f:
         data = json.load(f)
@@ -56,22 +57,75 @@ def main(path, building, start, dest):
                     find(data, str(node), 'y2'))
         nodes.append(node)
 
-    img = Image.open(path)
-    img.convert("RGB")
+    ## actual drawing ##
 
-    draw = ImageDraw.Draw(img)
+    font_path = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\css\\Font\\TIMES.TTF"
+    # grab correct dictionary and room number
+    building_dict = find_dict(building)
+    # variables for watermark
+    water_mark = "PB-JAW"
+    font_size = 100
+    margin = 5
 
-    # x center = (x1 + x2) / 2
-    # y center = (y1 + y2) / 2
-    for i in range(len(nodes)):
-        if i == len(nodes) - 1:
-            break
-        else:
-            draw.line([(nodes[i].x1 + nodes[i].x2) / 2, (nodes[i].y1 + nodes[i].y2) / 2,
-                       (nodes[i + 1].x1 + nodes[i + 1].x2) / 2, (nodes[i + 1].y1 + nodes[i + 1].y2) / 2],
-                      fill="black", width=5)
-    # img.show()
-    img.save(path, "JPEG")
+    # open image file
+    with Image.open(path) as im:
+        font = ImageFont.truetype(font_path, font_size)
+        # draw rectangle
+        draw = ImageDraw.Draw(im, 'RGBA')
+        print(building_dict)
+        draw.rectangle([(building_dict[str(start)][0], building_dict[str(start)][1]),
+                        (building_dict[str(start)][2], building_dict[str(start)][3])], (255, 0, 0, 95))
+        draw.rectangle([(building_dict[str(dest)][0], building_dict[str(dest)][1]),
+                        (building_dict[str(dest)][2], building_dict[str(dest)][3])], (0, 0, 255, 95))
+
+        # draw text, xy pixels, text, fill color, font (drawing room number on image)
+        # draw.text((25, 74), "Room:" + room_number, fill='black', font=font)
+
+        # calculate x,y coordinates of text
+        width, height = im.size
+        # print(width + " " + height)
+        text_width, text_height = draw.textsize(water_mark, font)
+        x = width - text_width - margin
+        y = height - text_height - margin
+        # draw watermark
+        draw.text((x, y), water_mark, font=font, fill='black')
+
+        # x center = (x1 + x2) / 2
+        # y center = (y1 + y2) / 2
+        for i in range(len(nodes)):
+            if i == len(nodes) - 1:
+                break
+            else:
+                draw.line([(nodes[i].x1 + nodes[i].x2) / 2, (nodes[i].y1 + nodes[i].y2) / 2,
+                           (nodes[i + 1].x1 + nodes[i + 1].x2) / 2, (nodes[i + 1].y1 + nodes[i + 1].y2) / 2],
+                          fill="black", width=5)
+
+        del draw
+
+    # grabs path to created image
+    cd = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\created\\{new_name}"
+
+    try:
+        save_image(im, cd)
+    except Exception as err:
+        print(format(err))
+
+    print(f"\t* Saved new file at {cd} *")
+
+
+# This method highlights the image using the corresponding pixels,
+# adds a watermark, and prints out the room number on to the image.
+#
+# return type: void
+#
+# parameters:
+# file              image location
+# building_dict     corresponding dictionary in pixels.py
+# room_number       building room number
+# name              name of new file to be saved
+# 
+# @author Anthony Shaidaee
+# watermark code provided by https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
 
 
 def find(json_object, name, element):
@@ -108,6 +162,56 @@ def convert():
         outfile.write(json_end)
 
 
+# This method opens an image
+#
+# return: new_image
+#
+# parameters:
+# path              image location
+# 
+# @author Anthony Shaidaee
+def open_image(path):
+    new_image = Image.open(path)
+    return new_image
+
+
+# This method saves the image
+#
+# return type: void
+#
+# parameters:
+# image             image
+# path              path to save
+# 
+# @author Anthony Shaidaee
+def save_image(image, path):
+    image.save(path, "JPEG")
+
+
+# This method grabs the correct building dictionary
+#
+# return: building_dict
+#
+# parameters:
+# building_dict     corresponding dictionary in pixels.py
+#
+# @author Anthony Shaidaee
+def find_dict(building_dict):
+    if building_dict == "bec":
+        building_dict = bec_dict
+    elif building_dict == "pft":
+        building_dict = pft_dict
+    elif building_dict == "loc":
+        building_dict = loc_dict
+    # elif building_dict == "pft2"s:
+    # building_dict = pft2_dict
+    elif building_dict == "loc2":
+        building_dict = loc2_dict
+    elif building_dict == "locb":
+        building_dict = locb_dict
+    return building_dict;
+
+
 class Node:
     def __init__(self, x1, y1, x2, y2, *argv, **kwargs):
         self.x1 = x1
@@ -116,8 +220,14 @@ class Node:
         self.y2 = y2
 
 
+def main(path, new_path, dictionary, start, dest):
+    print("\t**********************************************")
+    print("\t**** Greeter - STARTED PYTHON FILE CALL. *****")
+    print("\t**********************************************")
+    path_finder(path, new_path, dictionary, start, dest)
+
 if __name__ == "__main__":
     # path, building, start=1615, dest=1615
-    globals()[sys.argv[1]](sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+    globals()[sys.argv[1]](sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
     # main("path", "bec", 1620, 1420)
     # convert()
