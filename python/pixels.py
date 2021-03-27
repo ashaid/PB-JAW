@@ -239,4 +239,8 @@ bec_dict = {
 #       "Third door on the bottom" : [830, 750, 847, 766],
 #       "Between 1220 and 1120" : [834, 866, 851, 887],
 #       "Near 1125" [835, 948, 846, 967],
+#       
+#       loc_node_dict = {
+#       "3": [x1,y1,x2,y2],
+#       } 
 #}
