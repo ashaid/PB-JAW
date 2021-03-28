@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Python.Included;
 using Python.Runtime;
-using System.IO;
+using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace PB_JAW.Models
 {
@@ -192,7 +192,8 @@ namespace PB_JAW.Models
             }
             return details;
         }
-         public async Task<List<string>> EditMap(List<MapModel> Maps) {
+        public async Task<List<string>> EditMap(List<MapModel> Maps)
+        {
             /*     for each map call edit image
             *      set starting and ending location 
             *      different buildings for the first dest = predetermined exit and second map starting = predetermine starting
@@ -202,7 +203,8 @@ namespace PB_JAW.Models
             List<string> details1 = new List<string>();
             List<string> details2 = new List<string>();
             bool done = false;
-            while(!done) {
+            while (!done)
+            {
                 IntPtr gs = await StartPython();
 
                 details1 = FindDetails(Maps[0].Building, details1);
@@ -238,9 +240,9 @@ namespace PB_JAW.Models
                     //creates a dictionary of the source building
                     Dictionary<string, int> findExitNode = Nodes(details1[1]);
                     int start = Int32.Parse(roomNumber1);
-                    int dest = Int32.Parse(roomNumber2);
+                    _ = Int32.Parse(roomNumber2);
                     //sets destRoom to the default exit of the source building towards the other building
-                    dest = findExitNode[details2[4]];
+                    int dest = findExitNode[details2[4]];
                     //Calls the python path method
                     PythonPath(templatePath1, name1, details1[1], start, dest, gs);
 
@@ -339,12 +341,11 @@ namespace PB_JAW.Models
         */
         public string Directions(List<MapModel> Maps)
         {
-            string directions = "";
             /*
-             * establishes the sqlite connection and throws an error if the connection is not established
-             * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
-             * The connection and try/catch idea was originally posted by Tapas Pal
-             */
+            * establishes the sqlite connection and throws an error if the connection is not established
+            * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
+            * The connection and try/catch idea was originally posted by Tapas Pal
+            */
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
             {
@@ -369,6 +370,7 @@ namespace PB_JAW.Models
             string destRoom;
             string srcBuild;
             string destBuild;
+            string directions;
             if (Maps[0].Building.Contains("-1"))
             {
                 directions = "You have selected no starting point, therefore, directions will not be provided. Please refer to the map.";
@@ -524,8 +526,6 @@ namespace PB_JAW.Models
         */
         public string TimeQuery(List<MapModel> Maps)
         {
-            //time variable declaration;
-            string time = "";
 
             /*
              * establishes the sqlite connection and throws an error if the connection is not established
@@ -548,6 +548,8 @@ namespace PB_JAW.Models
             List<string> endingDetails = new List<string>();
             FindDetails(Maps[1].Building, endingDetails);
 
+            //time variable declaration;
+            string time;
             if (Maps[0].Building.Contains("-1"))
             {
                 time = "You have no starting destination, therefore, arrival time can not be calculated. Walk fast!";
@@ -611,8 +613,10 @@ namespace PB_JAW.Models
         */
         double ExitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum"
+            };
             cmd.Parameters.AddWithValue("@roomNum", srcRoom);
 
             double exitTime = Convert.ToDouble(cmd.ExecuteScalar());
@@ -644,8 +648,10 @@ namespace PB_JAW.Models
         */
         double DestTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum"
+            };
             cmd.Parameters.AddWithValue("@roomNum", destRoom);
 
             double timeToDest = Convert.ToDouble(cmd.ExecuteScalar());
@@ -676,8 +682,10 @@ namespace PB_JAW.Models
         */
         double CampusTimes(string srcBuild, string destBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid"
+            };
             cmd.Parameters.AddWithValue("@buildingid", destBuild);
 
             double timeToBuild = Convert.ToDouble(cmd.ExecuteScalar());
@@ -735,9 +743,11 @@ namespace PB_JAW.Models
                 Console.WriteLine("Connection not established");
             }
             //creates a new SQLite command
-            using var cmd = new SQLiteCommand(sqlCon);
-            //checks if user entered room number exists in the database, returns 1 or 0
-            cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + destBuild + " WHERE Room = @roomNum)";
+            using var cmd = new SQLiteCommand(sqlCon)
+            {
+                //checks if user entered room number exists in the database, returns 1 or 0
+                CommandText = "SELECT EXISTS(SELECT 1 FROM " + destBuild + " WHERE Room = @roomNum)"
+            };
             cmd.Parameters.AddWithValue("@roomNum", destRoom);
             //converts the return value of the query to an int and assigns it to validDestRoom
             int validDestRoom = Convert.ToInt32(cmd.ExecuteScalar());
@@ -921,7 +931,7 @@ namespace PB_JAW.Models
             }
 
             // import main.py to run
-            dynamic mod = Py.Import("path_finding");            
+            dynamic mod = Py.Import("path_finding");
             try
             {
                 // path, building, start=1615, dest=1615

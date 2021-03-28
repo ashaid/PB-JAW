@@ -90,7 +90,7 @@ namespace PB_JAW.Controllers
                     {
                         Console.WriteLine("no nodes");
                     }
-                    
+
                     //TempData["Map0"] = fileNames[0]; // file location of first map
                     //TempData["Map1"] = fileNames[1]; // file location of second map
                     TempData["Maps"] = fileNames;
