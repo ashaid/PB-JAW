@@ -62,9 +62,13 @@ Select Building and Enter Room Number
                 </div>
                 <span asp-validation-for="@Model.Maps[1].RoomNumber" class="text-danger"></span>
             </div>
+
+
         </div>
-        <div class="form-group">
-            <input type="submit" value="Create" class="btn-lg" />
+        <div class="form-inline">
+            <div class="form-group">
+                <input type="submit" value="Create" class="form-control" />
+            </div>
         </div>
     </form>
 </div>

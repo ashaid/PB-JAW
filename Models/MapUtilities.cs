@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Python.Included;
 using Python.Runtime;
-using System.IO;
+using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace PB_JAW.Models
 {
@@ -192,7 +192,77 @@ namespace PB_JAW.Models
             }
             return details;
         }
+        public async Task<List<string>> EditMap(List<MapModel> Maps)
+        {
+            /*     for each map call edit image
+            *      set starting and ending location 
+            *      different buildings for the first dest = predetermined exit and second map starting = predetermine starting
+            *      highlighting classrooms and entrances and exits while drawing the path 
+            */
+            List<string> names = new List<string>();
+            List<string> details1 = new List<string>();
+            List<string> details2 = new List<string>();
+            bool done = false;
+            while (!done)
+            {
+                IntPtr gs = await StartPython();
 
+                details1 = FindDetails(Maps[0].Building, details1);
+                // var for map 1
+                string buildingName1 = details1[0];
+                string dictionary1 = details1[1];
+                string templatePath1 = details1[2];
+                string roomNumber1 = Maps[0].RoomNumber.ToString();
+                string name1 = buildingName1 + "_" + roomNumber1 + ".jpeg";
+
+
+                details2 = FindDetails(Maps[1].Building, details2);
+                // var for map 2
+                string buildingName2 = details2[0];
+                string dictionary2 = details2[1];
+                string templatePath2 = details2[2];
+                string roomNumber2 = Maps[1].RoomNumber.ToString();
+                string name2 = buildingName2 + "_" + roomNumber2 + ".jpeg";
+
+                // if same building and floor
+                if (dictionary1 == dictionary2)
+                {
+                    string newName = buildingName1 + "_" + roomNumber1 + "_to_" + roomNumber2 + ".jpeg";
+                    int start = Int32.Parse(roomNumber1);
+                    int dest = Int32.Parse(roomNumber2);
+                    PythonPath(templatePath1, newName, dictionary1, start, dest, gs);
+                    names.Add(newName);
+
+                    done = true;
+                }
+                else
+                {
+                    //creates a dictionary of the source building
+                    Dictionary<string, int> findExitNode = Nodes(details1[1]);
+                    int start = Int32.Parse(roomNumber1);
+                    _ = Int32.Parse(roomNumber2);
+                    //sets destRoom to the default exit of the source building towards the other building
+                    int dest = findExitNode[details2[4]];
+                    //Calls the python path method
+                    PythonPath(templatePath1, name1, details1[1], start, dest, gs);
+
+                    //creates a dictionary of the destination building
+                    Dictionary<string, int> findEntNode = Nodes(details2[1]);
+                    //sets source room to the default entrace node of the destination building from the source building
+                    start = findEntNode[details1[3]];
+                    //sets the destination room to the original user input
+                    dest = Maps[1].RoomNumber;
+                    //restarts Python as it is closed by the previous PythonPath
+                    IntPtr gs2 = await StartPython();
+                    //Calls the python path method
+                    PythonPath(templatePath2, name2, details2[1], start, dest, gs2);
+
+                    done = true;
+                }
+
+            }
+            return names;
+        }
         /**
          * This method takes the template model maps and converts to
          * corresponding details to create the maps. Returns a list
@@ -209,47 +279,47 @@ namespace PB_JAW.Models
          * @since 3/23/2021
          *
          */
-        public async Task<List<string>> CreateMap(List<MapModel> Maps)
-        {
-            List<string> names = new List<string>();
+        //public async Task<List<string>> CreateMap(List<MapModel> Maps)
+        //{
+        //    List<string> names = new List<string>();
 
-            // for each map in list 
-            for (int i = 0; i < Maps.Count; i++)
-            {
-                // no starting destination
-                if(Maps[i].Building.Contains("-1"))
-                {
-                    names.Add("No starting location selected");
-                }
-                else
-                {
-                    // python memory store
-                    IntPtr gs = await StartPython();
+        //    // for each map in list 
+        //    for (int i = 0; i < Maps.Count; i++)
+        //    {
+        //        // no starting destination
+        //        if (Maps[i].Building.Contains("-1"))
+        //        {
+        //            names.Add("No starting location selected");
+        //        }
+        //        else
+        //        {
+        //            // python memory store
+        //            IntPtr gs = await StartPython();
 
-                    // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
-                    List<string> details = new List<string>();
-                    details = FindDetails(Maps[i].Building, details);
+        //            // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
+        //            List<string> details = new List<string>();
+        //            details = FindDetails(Maps[i].Building, details);
 
-                    // var for map
-                    string buildingName = details[0];
-                    string dictionary = details[1];
-                    string templatePath = details[2];
-                    string roomNumber = Maps[i].RoomNumber.ToString();
+        //            // var for map
+        //            string buildingName = details[0];
+        //            string dictionary = details[1];
+        //            string templatePath = details[2];
+        //            string roomNumber = Maps[i].RoomNumber.ToString();
 
-                    // name of new file
-                    string name = buildingName + "_" + roomNumber + ".jpeg";
+        //            // name of new file
+        //            string name = buildingName + "_" + roomNumber + ".jpeg";
 
-                    CreateImage(templatePath, dictionary, roomNumber, name, gs);
+        //            CreateImage(templatePath, dictionary, roomNumber, name, gs);
 
-                    // add new file to names array
-                    names.Add(name);
-                    details.Clear();
-                }
-                
-            }
-            // return new image file location (array)
-            return names;
-        }
+        //            // add new file to names array
+        //            names.Add(name);
+        //            details.Clear();
+        //        }
+
+        //    }
+        //    // return new image file location (array)
+        //    return names;
+        //}
 
         /**
         * This method calls string queries to multiple tables in the Locations.db
@@ -271,12 +341,11 @@ namespace PB_JAW.Models
         */
         public string Directions(List<MapModel> Maps)
         {
-            string directions = "";
             /*
-             * establishes the sqlite connection and throws an error if the connection is not established
-             * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
-             * The connection and try/catch idea was originally posted by Tapas Pal
-             */
+            * establishes the sqlite connection and throws an error if the connection is not established
+            * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
+            * The connection and try/catch idea was originally posted by Tapas Pal
+            */
             SQLiteConnection sqlCon = new SQLiteConnection("DataSource = Locations.db; Version=3; New=True;Compress=True;");
             try
             {
@@ -287,27 +356,33 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine("Connection not established");
             }
-
+            //Creates list for starting details
             List<string> startingDetails = new List<string>();
+            //Finds the preset possible details of the source building
             FindDetails(Maps[0].Building, startingDetails);
+            //Creates list for ending details
             List<string> endingDetails = new List<string>();
+            //Finds the preset possible details of the destination building
             FindDetails(Maps[1].Building, endingDetails);
 
+            //variable declarations
             string srcRoom;
             string destRoom;
             string srcBuild;
             string destBuild;
-            if (Maps[0].Building.Contains("-1")) 
+            string directions;
+            if (Maps[0].Building.Contains("-1"))
             {
                 directions = "You have selected no starting point, therefore, directions will not be provided. Please refer to the map.";
             }
-            else 
+            else
             {
-                // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
+                // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled, 6 = table identifier
                 srcRoom = Maps[0].RoomNumber.ToString();
                 destRoom = Maps[1].RoomNumber.ToString();
                 srcBuild = startingDetails[6].Replace("\n", String.Empty);
                 destBuild = endingDetails[6].Replace("\n", String.Empty);
+                //checks if starting building and destination building are the same
                 if (srcBuild == destBuild)
                 {
                     directions = "You are already in the building. Please refer to the map in order to find your classroom, it is nearby!";
@@ -451,8 +526,6 @@ namespace PB_JAW.Models
         */
         public string TimeQuery(List<MapModel> Maps)
         {
-            //time variable declaration;
-            string time = "";
 
             /*
              * establishes the sqlite connection and throws an error if the connection is not established
@@ -475,6 +548,8 @@ namespace PB_JAW.Models
             List<string> endingDetails = new List<string>();
             FindDetails(Maps[1].Building, endingDetails);
 
+            //time variable declaration;
+            string time;
             if (Maps[0].Building.Contains("-1"))
             {
                 time = "You have no starting destination, therefore, arrival time can not be calculated. Walk fast!";
@@ -538,8 +613,10 @@ namespace PB_JAW.Models
         */
         double ExitTimes(string srcRoom, string srcBuild, string destBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + destBuild + " FROM " + srcBuild + " WHERE ROOM = @roomNum"
+            };
             cmd.Parameters.AddWithValue("@roomNum", srcRoom);
 
             double exitTime = Convert.ToDouble(cmd.ExecuteScalar());
@@ -571,8 +648,10 @@ namespace PB_JAW.Models
         */
         double DestTimes(string destRoom, string destBuild, string srcBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + srcBuild + " FROM " + destBuild + " WHERE ROOM = @roomNum"
+            };
             cmd.Parameters.AddWithValue("@roomNum", destRoom);
 
             double timeToDest = Convert.ToDouble(cmd.ExecuteScalar());
@@ -603,8 +682,10 @@ namespace PB_JAW.Models
         */
         double CampusTimes(string srcBuild, string destBuild, SQLiteConnection con)
         {
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid";
+            using var cmd = new SQLiteCommand(con)
+            {
+                CommandText = "SELECT " + srcBuild + " FROM CAMPUS WHERE BuildingID = @buildingid"
+            };
             cmd.Parameters.AddWithValue("@buildingid", destBuild);
 
             double timeToBuild = Convert.ToDouble(cmd.ExecuteScalar());
@@ -631,16 +712,23 @@ namespace PB_JAW.Models
         */
         public bool CheckRoom(List<MapModel> Maps)
         {
+            //whether user entered rooms are valid
             bool validRooms = false;
 
+            //Creates list for starting details
             List<string> startingDetails = new List<string>();
+            //Finds the preset possible details of the source building
             FindDetails(Maps[0].Building, startingDetails);
+            //Creates list for ending details
             List<string> endingDetails = new List<string>();
+            //Finds the preset possible details of the destination building
             FindDetails(Maps[1].Building, endingDetails);
+            //sets the destination room to the user input and converts the int to a string
             string destRoom = Maps[1].RoomNumber.ToString();
+            //sets destBuild to its table identifier and deletes its new line character
             string destBuild = endingDetails[6].Replace("\n", String.Empty);
             /*
-             * establishes the sqlite connection and throws an error if the connection is not established
+             * establishes the sqlite connection and prints an error if the connection is not established
              * Citation: https://www.codeguru.com/csharp/.net/net_data/using-sqlite-in-a-c-application.html#:~:text=Getting%20Started%20with%20SQLite%20from%20a%20.&text=Open%20Visual%20Studio%2C%20select%20new,as%20pictured%20in%20Figure%201.
              * The connection and try/catch idea was originally posted by Tapas Pal
              */
@@ -654,76 +742,129 @@ namespace PB_JAW.Models
             {
                 Console.WriteLine("Connection not established");
             }
-            using var cmd = new SQLiteCommand(sqlCon);
-            cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + destBuild + " WHERE Room = @roomNum)";
+            //creates a new SQLite command
+            using var cmd = new SQLiteCommand(sqlCon)
+            {
+                //checks if user entered room number exists in the database, returns 1 or 0
+                CommandText = "SELECT EXISTS(SELECT 1 FROM " + destBuild + " WHERE Room = @roomNum)"
+            };
             cmd.Parameters.AddWithValue("@roomNum", destRoom);
+            //converts the return value of the query to an int and assigns it to validDestRoom
             int validDestRoom = Convert.ToInt32(cmd.ExecuteScalar());
+            //in the case of the user having no starting destination, checks if destination room is valid
             if (Maps[0].Building.Contains("-1") && validDestRoom == 1)
             {
                 validRooms = true;
             }
-            else 
+            //checks whether the source and destination rooms are valid
+            else
             {
+                //sets the srcBuild to is table identifier and removes new line character
                 string srcBuild = startingDetails[6].Replace("\n", String.Empty);
+                //sets srcRoom to string version of the user entered room number
                 string srcRoom = Maps[0].RoomNumber.ToString();
-                if (srcRoom == destRoom) 
+                //checks if rooms are the same, if true returns that rooms entered are invalid
+                if (srcRoom == destRoom)
                 {
                     return validRooms;
                 }
+                //checks whether the srcRoom is in the database
                 cmd.CommandText = "SELECT EXISTS(SELECT 1 FROM " + srcBuild + " WHERE Room = @roomNum)";
                 cmd.Parameters.AddWithValue("@roomNum", srcRoom);
                 int validStartRoom = Convert.ToInt32(cmd.ExecuteScalar());
+                //checks whether srcRoom and destRoom are both valid, if they are it sets validRooms to true
                 if (validStartRoom == 1 && validDestRoom == 1)
                 {
                     validRooms = true;
                 }
             }
+            //closes SQLite Connection
             sqlCon.Close();
             return validRooms;
         }
 
-        public async Task CreatePath(List<MapModel> Maps, string path1, string path2)
-        {
-            IntPtr gs = await StartPython();
-            List<string> startingDetails = new List<string>();
-            FindDetails(Maps[0].Building, startingDetails);
-            List<string> endingDetails = new List<string>();
-            FindDetails(Maps[1].Building, endingDetails);
-            string srcBuild = startingDetails[1];
-            string destBuild = endingDetails[1];
+        /*
+         * This method is used to provide control flow to the method which draws paths onto images.
+         * It clarifies which exit/entrance nodes are needed if a user is not just travelling 
+         * within a building.
+         * 
+         * method: CreatePath
+         * 
+         * return type: Task
+         * 
+         * parameters:
+         *      Maps        [List<MapsModel>]       list that contains room and building data from user input
+         *      
+         *      path1       [string]                Path to the source image that will have the path drawn on
+         *      
+         *      path2       [string]                Path to the destination image that will have the path drawn on
+         *      
+         * @author Brennen Calato
+         * @since 3/26/2021
+         */
+        //public async Task CreatePath(List<MapModel> Maps, string path1, string path2)
+        //{
+        //    IntPtr gs = await StartPython();
+        //    //Creates list for starting details
+        //    List<string> startingDetails = new List<string>();
+        //    //Finds the preset possible details of the source building
+        //    FindDetails(Maps[0].Building, startingDetails);
+        //    //Creates list for ending details
+        //    List<string> endingDetails = new List<string>();
+        //    //Finds the preset possible details of the destination building
+        //    FindDetails(Maps[1].Building, endingDetails);
+        //    string srcBuild = startingDetails[1];
+        //    string destBuild = endingDetails[1];
 
-            int srcRoom = Maps[0].RoomNumber;
-            int destRoom = Maps[1].RoomNumber;
+        //    //user entered source room number
+        //    int srcRoom = Maps[0].RoomNumber;
+        //    //user entered destination room number
+        //    int destRoom = Maps[1].RoomNumber;
 
 
-            if (srcBuild == destBuild)
-            {
-                PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
-                IntPtr gs2 = await StartPython();
-                PythonPath(path2, srcBuild, srcRoom, destRoom, gs2);
-            }
-            else 
-            {
-                //grab source building and source room
-                //set dest room to default exit
-                //Call PythonPath
-                Dictionary <string, int> findExitNode = Nodes(srcBuild);
-                destRoom = findExitNode[endingDetails[4]];
-                PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
-                //grab destination building
-                //set source room to default entrance
-                //set dest room to original destRoom
-                //Call PythonPath
-                Dictionary<string, int> findEntNode = Nodes(destBuild);
-                srcRoom = findEntNode[startingDetails[3]];
-                destRoom = Maps[1].RoomNumber;
-                IntPtr gs2 = await StartPython();
-                PythonPath(path2, destBuild, srcRoom, destRoom, gs2);
-            }
+        //    if (srcBuild == destBuild)
+        //    {
+        //        PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
+        //        IntPtr gs2 = await StartPython();
+        //        PythonPath(path2, srcBuild, srcRoom, destRoom, gs2);
+        //    }
+        //    else
+        //    {
+        //        //creates a dictionary of the source building
+        //        Dictionary<string, int> findExitNode = Nodes(srcBuild);
+        //        //sets destRoom to the default exit of the source building towards the other building
+        //        destRoom = findExitNode[endingDetails[4]];
+        //        //Calls the python path method
+        //        PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
 
-        }
+        //        //creates a dictionary of the destination building
+        //        Dictionary<string, int> findEntNode = Nodes(destBuild);
+        //        //sets source room to the default entrace node of the destination building from the source building
+        //        srcRoom = findEntNode[startingDetails[3]];
+        //        //sets the destination room to the original user input
+        //        destRoom = Maps[1].RoomNumber;
+        //        //restarts Python as it is closed by the previous PythonPath
+        //        IntPtr gs2 = await StartPython();
+        //        //Calls the python path method
+        //        PythonPath(path2, destBuild, srcRoom, destRoom, gs2);
+        //    }
 
-        public Dictionary<string, int> Nodes(string build) 
+        //}
+
+        /*
+         * This method returns a dictionary of entrance and exit nodes depending on the building
+         * 
+         * method: Nodes
+         * 
+         * return type: Dictionary<string, int>
+         * 
+         * parameters:
+         *      build           [string]    the building which the nodes are being retrieved for
+         * 
+         * @author Brennen Calato
+         * @since 3/26/2021
+         */
+        public Dictionary<string, int> Nodes(string build)
         {
             Dictionary<string, int> findNode = new Dictionary<string, int>();
             if (build == "bec")
@@ -751,7 +892,30 @@ namespace PB_JAW.Models
             return findNode;
         }
 
-        void PythonPath(string templatePath, string dictionary, int srcRoom, int destRoom, IntPtr gs)
+        /*
+         * This method calls a python file that used nodes to find the shortest path between classrooms.
+         * It then draws the path between the rooms on the result maps.
+         * 
+         * method: PythonPath
+         * 
+         * return type: void
+         * 
+         * parameters:
+         *      templatePath        [string]        The path to the template map image
+         *      
+         *      dictionary          [string]        the necessary dictionary intepretation of a building
+         *                                          such as "ExtBEC", "BEC", or "FrmBEC"
+         *                                    
+         *      srcRoom             [int]           the room from which the user is starting
+         *      
+         *      destRoom            [int]           the room the user is trying to reach
+         *      
+         *      gs                  [IntPtr]        an int pointer used to point to the started python file
+         *      
+         * @author Anthony Shaidaee
+         * @since 3/26/2021
+         */
+        void PythonPath(string templatePath, string newName, string dictionary, int srcRoom, int destRoom, IntPtr gs)
         {
             // string cleaning
             string path = "/python/";
@@ -768,19 +932,17 @@ namespace PB_JAW.Models
 
             // import main.py to run
             dynamic mod = Py.Import("path_finding");
-            dynamic mod2 = Py.Import("main");
-            
             try
             {
                 // path, building, start=1615, dest=1615
-                mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, srcRoom, destRoom);
+                mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, newName, dictionary, srcRoom, destRoom);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Console.WriteLine(e);
             }
-            
+
             PythonEngine.ReleaseLock(gs);
         }
-
     }
 }

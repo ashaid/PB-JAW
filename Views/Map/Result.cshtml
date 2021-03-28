@@ -4,15 +4,27 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!--------------------------------------------------------------------------------------------------------------------------
-    This is a work around fix. If the user creates a map and clicks the "back arrow" on the browser the application will be 
+    This is a work around fix. If the user creates a map and clicks the "back arrow" on the browser the application will be
     confused because it cannot properly instantiate/close python.
 --------------------------------------------------------------------------------------------------------------------------->
 <META Http-Equiv="Cache-Control" Content="no-cache" />
 <META Http-Equiv="Pragma" Content="no-cache" />
 <META Http-Equiv="Expires" Content="0" />
 
-<h1>Results:</h1>
-<div class="col">
+<h1>Results</h1>
+<h2><small class="text-muted">Your starting and destination locations are highlighted in red and blue respectively.</small></h2>
+<p>Current Time: @DateTime.Now.ToString("t")</p>
+<p>@TempData["Times"]</p>
+<p>@TempData["Directions"]</p>
+
+
+@foreach (var String in (IEnumerable<String>)TempData["Maps"]) {
+
+    <img class="img-fluid" src="@Url.Content("~/created/" + String)" />
+}
+
+
+@*<div class="col">
     <div label="map-1" class="col=1">
         <p>Current Time: @DateTime.Now.ToString("t")</p>
         <p>@TempData["Times"]</p>
@@ -33,6 +45,6 @@
     <div label="map-1" class="col=1">
         <img class="img-fluid" src="@Url.Content("~/created/" + @TempData["Map1"])" alt="map 2" />
     </div>
-</div>
+</div>*@
 
 

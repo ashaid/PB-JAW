@@ -173,7 +173,7 @@ pft_dict = {
         "1340A":[987, 382, 1025, 440],
         "1322":[1106, 212, 1174, 307],
         "1256":[905, 687, 981, 836],
-        "1206":[988, 753, 1076, 899],
+        "1206":[988, 753, 1076, 899]
 }
 # Dict of all room pixels for the building BEC
 # @author Joshua Dufrechou
@@ -212,6 +212,7 @@ bec_dict = {
     "1225": [624, 934, 749, 1023],
     "1202": [752, 933, 821, 979],
     "1200": [752, 981, 822, 1023],
+    "9999": [130, 455, 135, 460],
 }
 # Dict of all node pixels for quickest path
 # @author Joshua Dufrechou
@@ -239,6 +240,10 @@ bec_dict = {
 #       "Third door on the bottom" : [830, 750, 847, 766],
 #       "Between 1220 and 1120" : [834, 866, 851, 887],
 #       "Near 1125" [835, 948, 846, 967],
+#       
+#       loc_node_dict = {
+#       "3": [x1,y1,x2,y2],
+#       } 
 #}
 
 # Dict of all node pixels for quickest path for Lockett Hall

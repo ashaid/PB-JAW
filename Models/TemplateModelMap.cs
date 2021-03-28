@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 namespace PB_JAW.Models
 {
     public class TemplateModelMap
@@ -11,7 +6,7 @@ namespace PB_JAW.Models
 
         // building attribute
 
-        public TemplateModelMap() 
+        public TemplateModelMap()
         {
             Maps = new List<MapModel>();
         }

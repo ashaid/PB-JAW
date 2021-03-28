@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PB_JAW.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Data.SQLite;
 
 namespace PB_JAW.Controllers
 {
@@ -65,13 +63,13 @@ namespace PB_JAW.Controllers
             MapUtilities util = new MapUtilities(host);
 
             // if user has selected "---" dropdown option
-            if (templateModel.Maps[0].Building.Contains("-2") ||  templateModel.Maps[1].Building.Contains("-2"))
+            if (templateModel.Maps[0].Building.Contains("-2") || templateModel.Maps[1].Building.Contains("-2"))
             {
                 ModelState.AddModelError("", "Please select a building");
             }
 
             // if room number does not exist in the database 
-            if (!util.CheckRoom(templateModel.Maps)) 
+            if (!util.CheckRoom(templateModel.Maps))
             {
                 ModelState.AddModelError("", "Invalid Room Number");
             }
@@ -83,20 +81,29 @@ namespace PB_JAW.Controllers
                 try
                 {
                     List<string> fileNames = new List<string>();
-                    fileNames = await util.CreateMap(templateModel.Maps);
-
-                    TempData["Map0"] = fileNames[0]; // file location of first map
-                    TempData["Map1"] = fileNames[1]; // file location of second map
-                    TempData["Directions"] = util.Directions(templateModel.Maps); // directions
-                    TempData["Times"] = util.TimeQuery(templateModel.Maps); // time
+                    //fileNames = await util.CreateMap(templateModel.Maps);
                     try
                     {
-                        await util.CreatePath(templateModel.Maps, "wwwroot/created/" + fileNames[0], "wwwroot/created/" + fileNames[1]);
+                        fileNames = await util.EditMap(templateModel.Maps);
                     }
-                    catch 
+                    catch
                     {
-                        Console.WriteLine("No Starting Location");
+                        Console.WriteLine("no nodes");
                     }
+
+                    //TempData["Map0"] = fileNames[0]; // file location of first map
+                    //TempData["Map1"] = fileNames[1]; // file location of second map
+                    TempData["Maps"] = fileNames;
+                    TempData["Directions"] = util.Directions(templateModel.Maps); // directions
+                    TempData["Times"] = util.TimeQuery(templateModel.Maps); // time
+                    //try
+                    //{
+                    //    await util.CreatePath(templateModel.Maps, "wwwroot/created/" + fileNames[0], "wwwroot/created/" + fileNames[1]);
+                    //}
+                    //catch
+                    //{
+                    //    Console.WriteLine("No Starting Location or Nodes Not Available");
+                    //}
                     //await util.CreatePath(templateModel.Maps, fileNames[0] + "wwwroot/created/" , fileNames[1]);
                 }
                 catch
