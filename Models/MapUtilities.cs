@@ -245,7 +245,7 @@ namespace PB_JAW.Models
                     int dest = findExitNode[details2[4]];
                     //Calls the python path method
                     PythonPath(templatePath1, name1, details1[1], start, dest, gs);
-
+                    names.Add(name1);
                     //creates a dictionary of the destination building
                     Dictionary<string, int> findEntNode = Nodes(details2[1]);
                     //sets source room to the default entrace node of the destination building from the source building
@@ -256,7 +256,7 @@ namespace PB_JAW.Models
                     IntPtr gs2 = await StartPython();
                     //Calls the python path method
                     PythonPath(templatePath2, name2, details2[1], start, dest, gs2);
-
+                    names.Add(name2);
                     done = true;
                 }
 

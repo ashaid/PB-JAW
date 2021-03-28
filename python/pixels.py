@@ -95,6 +95,7 @@ locb_dict = {
         "10":[1628, 387, 1931, 638],
         "16":[1201, 8, 1851, 190],
         "2":[644, 402, 1352, 588],
+        "9999":[959, 991, 978, 1015],
 }
 # Dict of all room pixels for the building PFT
 # @author Joshua Dufrechou

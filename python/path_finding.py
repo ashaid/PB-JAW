@@ -26,7 +26,8 @@ def edge_list_getter(building):
         edge_list = np.array([
             (15, 700, 1), (700, 600, 2), (600, 500, 2), (500, 1100, 2), (1100, 16, 1), (1100, 400, 2),
             (400, 300, 2), (300, 10, 1), (300, 200, 2), (200, 6, 1), (200, 100, 2), (100, 2, 1), 
-            (100, 9999, 2), (100, 1000, 2), (1000, 5, 1), (1000, 900, 2), (900, 9, 1), (900, 800, 2)
+            (100, 9999, 2), (100, 1000, 2), (1000, 5, 1), (1000, 900, 2), (900, 9, 1), (900, 800, 2),
+            (700, 800, 2)
         ])
     # elif building == "pft-1":
 
@@ -68,10 +69,10 @@ def path_finder(path, new_name, building, start, dest):
     margin = 5
 
     # open image file
-    with Image.open(path) as im:
+    with Image.open(open(path, 'rb')) as im:
         font = ImageFont.truetype(font_path, font_size)
         # draw rectangle
-        draw = ImageDraw.Draw(im, 'RGBA')
+        draw = ImageDraw.Draw(im)
         print(building_dict)
         draw.rectangle([(building_dict[str(start)][0], building_dict[str(start)][1]),
                         (building_dict[str(start)][2], building_dict[str(start)][3])], (255, 0, 0, 95))
