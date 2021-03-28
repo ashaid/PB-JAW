@@ -34,13 +34,11 @@ def edge_list_getter(building):
 # calculate shortest path nodes
 # draw nodes
 # draw a line connecting nodes
+# watermark code provided by https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
 def path_finder(path, new_name, building, start, dest):
-    print(path)
     edge_list = edge_list_getter(building)
-
     adjacency = edgelist2adjacency(edge_list, undirected=True)
     adjacency = csr_matrix(adjacency)
-
     dist_matrix, predecessors = shortest_path(adjacency, directed=False, method='auto', return_predecessors=True)
 
     # grab json data
@@ -51,14 +49,12 @@ def path_finder(path, new_name, building, start, dest):
     print(get_path(predecessors, start, dest))
 
     nodes = []
-
     for node in get_path(predecessors, start, dest):
         node = Node(find(data, str(node), 'x1'), find(data, str(node), 'y1'), find(data, str(node), 'x2'),
                     find(data, str(node), 'y2'))
         nodes.append(node)
 
-    ## actual drawing ##
-
+    # actual drawing
     font_path = str(pathlib.Path().absolute().parent) + f"\\pb-jaw\\wwwroot\\css\\Font\\TIMES.TTF"
     # grab correct dictionary and room number
     building_dict = find_dict(building)
@@ -113,21 +109,6 @@ def path_finder(path, new_name, building, start, dest):
     print(f"\t* Saved new file at {cd} *")
 
 
-# This method highlights the image using the corresponding pixels,
-# adds a watermark, and prints out the room number on to the image.
-#
-# return type: void
-#
-# parameters:
-# file              image location
-# building_dict     corresponding dictionary in pixels.py
-# room_number       building room number
-# name              name of new file to be saved
-# 
-# @author Anthony Shaidaee
-# watermark code provided by https://www.tutorialspoint.com/python_pillow/python_pillow_creating_a_watermark.htm
-
-
 def find(json_object, name, element):
     return [obj for obj in json_object if obj['name'] == name][0][element]
 
@@ -141,6 +122,7 @@ def get_path(predecessors, i, j):
     return path[::-1]
 
 
+# method used for converting pixel dictionary to a correctly formatted json file
 def convert():
     json_begin = '['
     json_end = ']'
@@ -203,15 +185,16 @@ def find_dict(building_dict):
         building_dict = pft_dict
     elif building_dict == "loc":
         building_dict = loc_dict
-    # elif building_dict == "pft2"s:
+    # elif building_dict == "pft2":
     # building_dict = pft2_dict
     elif building_dict == "loc2":
         building_dict = loc2_dict
     elif building_dict == "locb":
         building_dict = locb_dict
-    return building_dict;
+    return building_dict
 
 
+# node class used to store node values
 class Node:
     def __init__(self, x1, y1, x2, y2, *argv, **kwargs):
         self.x1 = x1
@@ -226,8 +209,8 @@ def main(path, new_path, dictionary, start, dest):
     print("\t**********************************************")
     path_finder(path, new_path, dictionary, start, dest)
 
+
 if __name__ == "__main__":
-    # path, building, start=1615, dest=1615
+    # path, new image, building, start=1615, dest=1615
     globals()[sys.argv[1]](sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
-    # main("path", "bec", 1620, 1420)
     # convert()
