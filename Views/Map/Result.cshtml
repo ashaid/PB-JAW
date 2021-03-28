@@ -11,7 +11,7 @@
 <META Http-Equiv="Pragma" Content="no-cache" />
 <META Http-Equiv="Expires" Content="0" />
 
-<h1>Results</h1>
+<h1>Results:</h1>
 <h2><small class="text-muted">Your starting and destination locations are highlighted in red and blue respectively.</small></h2>
 <p>Current Time: @DateTime.Now.ToString("t")</p>
 <p>@TempData["Times"]</p>
@@ -19,32 +19,10 @@
 
 
 @foreach (var String in (IEnumerable<String>)TempData["Maps"]) {
-
+<div class="col">
     <img class="img-fluid" src="@Url.Content("~/created/" + String)" />
+</div>
 }
 
-
-@*<div class="col">
-    <div label="map-1" class="col=1">
-        <p>Current Time: @DateTime.Now.ToString("t")</p>
-        <p>@TempData["Times"]</p>
-        <p>@TempData["Directions"]</p>
-        Starting Map
-        @if (TempData["Map0"].ToString() != "No starting location selected")
-        {
-            <img class="img-fluid" src="@Url.Content("~/created/" + @TempData["Map0"])" alt="map 1" />
-        }
-        else
-        {
-            <p>No starting location selected</p>
-        }
-
-    </div>
-
-    Destination Map
-    <div label="map-1" class="col=1">
-        <img class="img-fluid" src="@Url.Content("~/created/" + @TempData["Map1"])" alt="map 2" />
-    </div>
-</div>*@
 
 

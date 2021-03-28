@@ -73,7 +73,6 @@ def path_finder(path, new_name, building, start, dest):
         font = ImageFont.truetype(font_path, font_size)
         # draw rectangle
         draw = ImageDraw.Draw(im)
-        print(building_dict)
         draw.rectangle([(building_dict[str(start)][0], building_dict[str(start)][1]),
                         (building_dict[str(start)][2], building_dict[str(start)][3])], (255, 0, 0, 95))
         draw.rectangle([(building_dict[str(dest)][0], building_dict[str(dest)][1]),
@@ -84,7 +83,6 @@ def path_finder(path, new_name, building, start, dest):
 
         # calculate x,y coordinates of text
         width, height = im.size
-        # print(width + " " + height)
         text_width, text_height = draw.textsize(water_mark, font)
         x = width - text_width - margin
         y = height - text_height - margin
