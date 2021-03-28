@@ -86,9 +86,9 @@ namespace PB_JAW.Controllers
                     {
                         fileNames = await util.EditMap(templateModel.Maps);
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        Console.WriteLine("no nodes");
+                        Console.WriteLine(e);
                     }
 
                     //TempData["Map0"] = fileNames[0]; // file location of first map
