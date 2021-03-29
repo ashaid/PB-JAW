@@ -35,6 +35,9 @@ loc_dict = {
         "134":[1093, 272, 1227, 473],
         "136":[1235, 270, 1368, 473],
         "138":[1374, 270, 1509, 472],
+        "9997" : [1444, 778, 1461, 796],
+        "9998" : [436, 776, 456, 794],
+        "9999" : [935, 871, 953, 889],
 }
 # Dict of all room pixels for the second floor of Lockett
 # @author Joshua Dufrechou
@@ -83,6 +86,8 @@ loc2_dict = {
         "206":[430, 887, 505, 976],
         "204":[327, 887, 415, 977],
         "202":[240, 890, 317, 977],
+        "9998" : [1572, 822, 1586, 838],
+        "9999" : [170, 828, 191, 847],
 }
 # Dict of all room pixels for the basement of Lockett
 # @author Joshua Dufrechou

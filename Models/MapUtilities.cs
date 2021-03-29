@@ -802,54 +802,7 @@ namespace PB_JAW.Models
          * @author Brennen Calato
          * @since 3/26/2021
          */
-        //public async Task CreatePath(List<MapModel> Maps, string path1, string path2)
-        //{
-        //    IntPtr gs = await StartPython();
-        //    //Creates list for starting details
-        //    List<string> startingDetails = new List<string>();
-        //    //Finds the preset possible details of the source building
-        //    FindDetails(Maps[0].Building, startingDetails);
-        //    //Creates list for ending details
-        //    List<string> endingDetails = new List<string>();
-        //    //Finds the preset possible details of the destination building
-        //    FindDetails(Maps[1].Building, endingDetails);
-        //    string srcBuild = startingDetails[1];
-        //    string destBuild = endingDetails[1];
-
-        //    //user entered source room number
-        //    int srcRoom = Maps[0].RoomNumber;
-        //    //user entered destination room number
-        //    int destRoom = Maps[1].RoomNumber;
-
-
-        //    if (srcBuild == destBuild)
-        //    {
-        //        PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
-        //        IntPtr gs2 = await StartPython();
-        //        PythonPath(path2, srcBuild, srcRoom, destRoom, gs2);
-        //    }
-        //    else
-        //    {
-        //        //creates a dictionary of the source building
-        //        Dictionary<string, int> findExitNode = Nodes(srcBuild);
-        //        //sets destRoom to the default exit of the source building towards the other building
-        //        destRoom = findExitNode[endingDetails[4]];
-        //        //Calls the python path method
-        //        PythonPath(path1, srcBuild, srcRoom, destRoom, gs);
-
-        //        //creates a dictionary of the destination building
-        //        Dictionary<string, int> findEntNode = Nodes(destBuild);
-        //        //sets source room to the default entrace node of the destination building from the source building
-        //        srcRoom = findEntNode[startingDetails[3]];
-        //        //sets the destination room to the original user input
-        //        destRoom = Maps[1].RoomNumber;
-        //        //restarts Python as it is closed by the previous PythonPath
-        //        IntPtr gs2 = await StartPython();
-        //        //Calls the python path method
-        //        PythonPath(path2, destBuild, srcRoom, destRoom, gs2);
-        //    }
-
-        //}
+        
 
         /*
          * This method returns a dictionary of entrance and exit nodes depending on the building
@@ -874,12 +827,14 @@ namespace PB_JAW.Models
                 findNode.Add("ExtPFT", 9999);
                 findNode.Add("ExtLoc", 9999);
             }
-            else if (build.Contains("loc") || build.Contains("locb"))
+            else if (build.Contains("loc") || build.Contains("locb") || build.Contains("loc2"))
             {
                 findNode.Add("FrmPFT", -1);
                 findNode.Add("FrmBEC", 9999);
                 findNode.Add("ExtPFT", -1);
                 findNode.Add("ExtBEC", 9999);
+                findNode.Add("FrmLoc", 9999);
+                findNode.Add("ExtLoc", 9999);
             }
             else if (build == "pft")
             {
