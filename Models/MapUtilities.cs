@@ -192,6 +192,23 @@ namespace PB_JAW.Models
             }
             return details;
         }
+
+        /**
+         * This method takes the template model maps and converts to
+         * corresponding details to create the maps. Returns a list
+         * of the created file locations to be displayed to the user.
+         *
+         * method: EditMap
+         *
+         * return type: Task<List<string>>
+         *
+         * parameters:
+         * Maps      [List<MapModel>]        list of maps
+         *
+         * @author Anthony Shaidaee/Brennen Calato
+         * @since 3/26/2021
+         *
+         */
         public async Task<List<string>> EditMap(List<MapModel> Maps)
         {
             /*     for each map call edit image
@@ -235,6 +252,7 @@ namespace PB_JAW.Models
 
                     done = true;
                 }
+                // if between two buildings
                 else
                 {
                     //creates a dictionary of the source building
@@ -263,22 +281,7 @@ namespace PB_JAW.Models
             }
             return names;
         }
-        /**
-         * This method takes the template model maps and converts to
-         * corresponding details to create the maps. Returns a list
-         * of the created file locations to be displayed to the user.
-         *
-         * method: CreateMap
-         *
-         * return type: Task<List<string>
-         *
-         * parameters:
-         * Maps      [List<MapModel>]        list of maps
-         *
-         * @author Anthony Shaidaee
-         * @since 3/23/2021
-         *
-         */
+
 
         /**
         * This method calls string queries to multiple tables in the Locations.db
