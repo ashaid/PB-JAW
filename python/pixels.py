@@ -320,7 +320,7 @@ bec_dict = {
 #       } 
 #}
 
-# Dict of all node pixels for quickest path for Lockett Hall
+# Dict of all node pixels for quickest path for Lockett Hall EDGES
 # @author Joshua Rovira
 # @since 3/26/2021
 # Note that the nodes are name after their corresponding numbers on the images in NodeImages
@@ -375,6 +375,8 @@ bec_dict = {
 #   "9997" : [1572, 822, 1586, 838],
 #   "9998" : [170, 828, 191, 847],
 #}
+
+#PATRICKS NODES FOR PFT FLOOR 1
 #pft_1_node_dict = {
 #   "1" : [535, 928, 550, 940],
 #   "2" : [667, 928, 682, 940],
@@ -393,7 +395,12 @@ bec_dict = {
 #   "9997" : [658, 822, 675, 838],
 #   "9998" : [881, 85, 903, 91],
 #   "9999" : [403, 923, 412, 951],
+#   "15" : [436, 317, 446, 328],
+#   "16" : [529, 317, 543, 328],
+#   "17" : [881, 317, 903, 328],
 #}
+
+#WILLIAM'S NODES FOR PFT FLOOR 2
 #pft_2_node_dict = {
 #   "1" : [641, 705, 643, 707],
 #   "2" : [786, 705, 788, 707],
