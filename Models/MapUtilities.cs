@@ -279,47 +279,6 @@ namespace PB_JAW.Models
          * @since 3/23/2021
          *
          */
-        //public async Task<List<string>> CreateMap(List<MapModel> Maps)
-        //{
-        //    List<string> names = new List<string>();
-
-        //    // for each map in list 
-        //    for (int i = 0; i < Maps.Count; i++)
-        //    {
-        //        // no starting destination
-        //        if (Maps[i].Building.Contains("-1"))
-        //        {
-        //            names.Add("No starting location selected");
-        //        }
-        //        else
-        //        {
-        //            // python memory store
-        //            IntPtr gs = await StartPython();
-
-        //            // 0 = name, 1 = dictionary, 2 = template path, 3 = dest direction, 4 = exit direction, 5 = time traveled
-        //            List<string> details = new List<string>();
-        //            details = FindDetails(Maps[i].Building, details);
-
-        //            // var for map
-        //            string buildingName = details[0];
-        //            string dictionary = details[1];
-        //            string templatePath = details[2];
-        //            string roomNumber = Maps[i].RoomNumber.ToString();
-
-        //            // name of new file
-        //            string name = buildingName + "_" + roomNumber + ".jpeg";
-
-        //            CreateImage(templatePath, dictionary, roomNumber, name, gs);
-
-        //            // add new file to names array
-        //            names.Add(name);
-        //            details.Clear();
-        //        }
-
-        //    }
-        //    // return new image file location (array)
-        //    return names;
-        //}
 
         /**
         * This method calls string queries to multiple tables in the Locations.db
@@ -802,7 +761,7 @@ namespace PB_JAW.Models
          * @author Brennen Calato
          * @since 3/26/2021
          */
-        
+
 
         /*
          * This method returns a dictionary of entrance and exit nodes depending on the building
