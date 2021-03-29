@@ -848,8 +848,8 @@ namespace PB_JAW.Models
             dynamic mod = Py.Import("path_finding");
             try
             {
-                // path, building, start=1615, dest=1615
-                mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, newName, dictionary, srcRoom, destRoom);
+                // path, building, start=1615, dest=1615                                                            swapped to fix color issue
+                mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, newName, dictionary, destRoom, srcRoom);
             }
             catch (Exception e)
             {
