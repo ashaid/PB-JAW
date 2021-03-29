@@ -795,7 +795,7 @@ namespace PB_JAW.Models
                 findNode.Add("FrmLoc", 9998);
                 findNode.Add("ExtLoc", 9999);
             }
-            else if (build.Contains("pft") || build.Contains("pft2")) ;
+            else if (build.Contains("pft") || build.Contains("pft2"))
             {
                 findNode.Add("FrmBEC", 9998);
                 findNode.Add("FrmLoc", 9999);
