@@ -792,7 +792,7 @@ namespace PB_JAW.Models
                 findNode.Add("FrmBEC", 9999);
                 findNode.Add("ExtPFT", -1);
                 findNode.Add("ExtBEC", 9999);
-                findNode.Add("FrmLoc", 9999);
+                findNode.Add("FrmLoc", 9998);
                 findNode.Add("ExtLoc", 9999);
             }
             else if (build == "pft")

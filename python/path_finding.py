@@ -49,7 +49,7 @@ def edge_list_getter(building):
             (6, 237, 1), (6, 239, 1), (11, 235, 1), (11, 241, 1), (10, 243, 1), 
             (10, 244, 1), (9, 240, 1), (7, 232, 1), (7, 9998, 2), (1, 9999, 2), (8, 7,  2),
             (9, 8, 2), (10, 9, 2), (11, 8, 2), (2, 1, 2), (3, 2, 2), (4, 3,  2), (5, 4, 2),
-            (6, 3, 2)
+            (6, 3, 2), (6, 11, 2), (1, 7, 3)
         ])
     # elif building == "locb": //or whatever locket's basement is called
     #   edge_list = np.array([
@@ -100,9 +100,9 @@ def path_finder(path, new_name, building, start, dest):
         # draw rectangle
         draw = ImageDraw.Draw(im)
         draw.rectangle([(building_dict[str(start)][0], building_dict[str(start)][1]),
-                        (building_dict[str(start)][2], building_dict[str(start)][3])], (255, 0, 0, 95))
+                        (building_dict[str(start)][2], building_dict[str(start)][3])], (255, 0, 0, 15))
         draw.rectangle([(building_dict[str(dest)][0], building_dict[str(dest)][1]),
-                        (building_dict[str(dest)][2], building_dict[str(dest)][3])], (0, 0, 255, 95))
+                        (building_dict[str(dest)][2], building_dict[str(dest)][3])], (0, 0, 255, 15))
 
         # draw text, xy pixels, text, fill color, font (drawing room number on image)
         # draw.text((25, 74), "Room:" + room_number, fill='black', font=font)
