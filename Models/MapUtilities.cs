@@ -788,19 +788,21 @@ namespace PB_JAW.Models
             }
             else if (build.Contains("loc") || build.Contains("locb") || build.Contains("loc2"))
             {
-                findNode.Add("FrmPFT", -1);
+                findNode.Add("FrmPFT", 9999);
                 findNode.Add("FrmBEC", 9999);
-                findNode.Add("ExtPFT", -1);
+                findNode.Add("ExtPFT", 9999);
                 findNode.Add("ExtBEC", 9999);
                 findNode.Add("FrmLoc", 9998);
                 findNode.Add("ExtLoc", 9999);
             }
-            else if (build == "pft")
+            else if (build.Contains("pft") || build.Contains("pft2")) ;
             {
-                findNode.Add("FrmBEC", 9999);
-                findNode.Add("FrmLoc", -2);
-                findNode.Add("ExtBEC", 9999);
-                findNode.Add("ExtLoc", -2);
+                findNode.Add("FrmBEC", 9998);
+                findNode.Add("FrmLoc", 9999);
+                findNode.Add("ExtBEC", 9998);
+                findNode.Add("ExtLoc", 9999);
+                findNode.Add("FrmPFT", 9997);
+                findNode.Add("ExtPFT", 9997);
             }
 
             return findNode;
