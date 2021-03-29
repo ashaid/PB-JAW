@@ -91,20 +91,9 @@ namespace PB_JAW.Controllers
                         Console.WriteLine(e);
                     }
 
-                    //TempData["Map0"] = fileNames[0]; // file location of first map
-                    //TempData["Map1"] = fileNames[1]; // file location of second map
                     TempData["Maps"] = fileNames;
                     TempData["Directions"] = util.Directions(templateModel.Maps); // directions
                     TempData["Times"] = util.TimeQuery(templateModel.Maps); // time
-                    //try
-                    //{
-                    //    await util.CreatePath(templateModel.Maps, "wwwroot/created/" + fileNames[0], "wwwroot/created/" + fileNames[1]);
-                    //}
-                    //catch
-                    //{
-                    //    Console.WriteLine("No Starting Location or Nodes Not Available");
-                    //}
-                    //await util.CreatePath(templateModel.Maps, fileNames[0] + "wwwroot/created/" , fileNames[1]);
                 }
                 catch
                 {

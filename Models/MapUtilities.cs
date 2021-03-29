@@ -788,9 +788,9 @@ namespace PB_JAW.Models
             }
             else if (build.Contains("loc") || build.Contains("locb") || build.Contains("loc2"))
             {
-                findNode.Add("FrmPFT", -1);
+                findNode.Add("FrmPFT", 9999);
                 findNode.Add("FrmBEC", 9999);
-                findNode.Add("ExtPFT", -1);
+                findNode.Add("ExtPFT", 9999);
                 findNode.Add("ExtBEC", 9999);
                 findNode.Add("FrmLoc", 9998);
                 findNode.Add("ExtLoc", 9999);
