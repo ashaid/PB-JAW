@@ -69,49 +69,6 @@ namespace PB_JAW.Models
         }
 
         /**
-         * This method takes the template path, dictionary,
-         * room number, name of new file, and python pointer
-         * and calls the corresponding python script to actually
-         * create the new images
-         *
-         * method: CreateImage
-         *
-         * return type: void
-         *
-         * parameters:
-         * templatePath      [string]        path to template
-         * dictionary        [string]        correct python dictionary for building
-         * roomNumber        [string]        room number 
-         * name              [string]        name of new image
-         * gs                [IntPtr]        pointer to python intialization
-         *
-         * @author Anthony Shaidaee
-         * @since 3/1/2021
-         *
-         */
-        void CreateImage(string templatePath, string dictionary, string roomNumber, string name, IntPtr gs)
-        {
-            // string cleaning
-            string path = "/python/";
-            path = host.ContentRootFileProvider.GetFileInfo(path).PhysicalPath;
-            path = path.Replace('\\', '/');
-
-            // set PYTHON global variable to look for script
-            int returnValue = PythonEngine.RunSimpleString($"import sys;sys.path.insert(1, '{path}');");
-            if (returnValue != 0)
-            {
-                //throw exception or other failure handling
-                Console.WriteLine("!!!!!! incorrect PATH setting !!!!!!!!!!!!");
-            }
-
-            // import main.py to run
-            dynamic mod = Py.Import("main");
-            // call main with [map].jpeg, [dict], [room number] [name of new image]
-            mod.main(host.ContentRootFileProvider.GetFileInfo(templatePath).PhysicalPath, dictionary, roomNumber, name);
-            PythonEngine.ReleaseLock(gs);
-        }
-
-        /**
          * This method takes a building number and an empty list
          * and returns the lsit filled with the name of building,
          * dictionary name, template path, from and src fields, and
@@ -222,61 +179,70 @@ namespace PB_JAW.Models
             bool done = false;
             while (!done)
             {
-                IntPtr gs = await StartPython();
-
-                details1 = FindDetails(Maps[0].Building, details1);
-                // var for map 1
-                string buildingName1 = details1[0];
-                string dictionary1 = details1[1];
-                string templatePath1 = details1[2];
-                string roomNumber1 = Maps[0].RoomNumber.ToString();
-                string name1 = buildingName1 + "_" + roomNumber1 + ".jpeg";
-
-
-                details2 = FindDetails(Maps[1].Building, details2);
-                // var for map 2
-                string buildingName2 = details2[0];
-                string dictionary2 = details2[1];
-                string templatePath2 = details2[2];
-                string roomNumber2 = Maps[1].RoomNumber.ToString();
-                string name2 = buildingName2 + "_" + roomNumber2 + ".jpeg";
-
-                // if same building and floor
-                if (dictionary1 == dictionary2)
+                if(Maps[0].Building.Contains("-1"))
                 {
-                    string newName = buildingName1 + "_" + roomNumber1 + "_to_" + roomNumber2 + ".jpeg";
-                    int start = Int32.Parse(roomNumber1);
-                    int dest = Int32.Parse(roomNumber2);
-                    PythonPath(templatePath1, newName, dictionary1, start, dest, gs);
-                    names.Add(newName);
-
-                    done = true;
+                    names.Add("No starting location selected");
+                    break;
                 }
-                // if between two buildings
                 else
                 {
-                    //creates a dictionary of the source building
-                    Dictionary<string, int> findExitNode = Nodes(details1[1]);
-                    int start = Int32.Parse(roomNumber1);
-                    _ = Int32.Parse(roomNumber2);
-                    //sets destRoom to the default exit of the source building towards the other building
-                    int dest = findExitNode[details2[4]];
-                    //Calls the python path method
-                    PythonPath(templatePath1, name1, details1[1], start, dest, gs);
-                    names.Add(name1);
-                    //creates a dictionary of the destination building
-                    Dictionary<string, int> findEntNode = Nodes(details2[1]);
-                    //sets source room to the default entrace node of the destination building from the source building
-                    start = findEntNode[details1[3]];
-                    //sets the destination room to the original user input
-                    dest = Maps[1].RoomNumber;
-                    //restarts Python as it is closed by the previous PythonPath
-                    IntPtr gs2 = await StartPython();
-                    //Calls the python path method
-                    PythonPath(templatePath2, name2, details2[1], start, dest, gs2);
-                    names.Add(name2);
-                    done = true;
+                    IntPtr gs = await StartPython();
+
+                    details1 = FindDetails(Maps[0].Building, details1);
+                    // var for map 1
+                    string buildingName1 = details1[0];
+                    string dictionary1 = details1[1];
+                    string templatePath1 = details1[2];
+                    string roomNumber1 = Maps[0].RoomNumber.ToString();
+                    string name1 = buildingName1 + "_" + roomNumber1 + ".jpeg";
+
+
+                    details2 = FindDetails(Maps[1].Building, details2);
+                    // var for map 2
+                    string buildingName2 = details2[0];
+                    string dictionary2 = details2[1];
+                    string templatePath2 = details2[2];
+                    string roomNumber2 = Maps[1].RoomNumber.ToString();
+                    string name2 = buildingName2 + "_" + roomNumber2 + ".jpeg";
+
+                    // if same building and floor
+                    if (dictionary1 == dictionary2)
+                    {
+                        string newName = buildingName1 + "_" + roomNumber1 + "_to_" + roomNumber2 + ".jpeg";
+                        int start = Int32.Parse(roomNumber1);
+                        int dest = Int32.Parse(roomNumber2);
+                        PythonPath(templatePath1, newName, dictionary1, start, dest, gs);
+                        names.Add(newName);
+
+                        done = true;
+                    }
+                    // if between two buildings
+                    else
+                    {
+                        //creates a dictionary of the source building
+                        Dictionary<string, int> findExitNode = Nodes(details1[1]);
+                        int start = Int32.Parse(roomNumber1);
+                        _ = Int32.Parse(roomNumber2);
+                        //sets destRoom to the default exit of the source building towards the other building
+                        int dest = findExitNode[details2[4]];
+                        //Calls the python path method
+                        PythonPath(templatePath1, name1, details1[1], start, dest, gs);
+                        names.Add(name1);
+                        //creates a dictionary of the destination building
+                        Dictionary<string, int> findEntNode = Nodes(details2[1]);
+                        //sets source room to the default entrace node of the destination building from the source building
+                        start = findEntNode[details1[3]];
+                        //sets the destination room to the original user input
+                        dest = Maps[1].RoomNumber;
+                        //restarts Python as it is closed by the previous PythonPath
+                        IntPtr gs2 = await StartPython();
+                        //Calls the python path method
+                        PythonPath(templatePath2, name2, details2[1], start, dest, gs2);
+                        names.Add(name2);
+                        done = true;
+                    }
                 }
+                
 
             }
             return names;
