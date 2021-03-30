@@ -69,7 +69,7 @@ namespace PB_JAW.Controllers
             }
 
             // if room number does not exist in the database 
-            if (!util.CheckRoom(templateModel.Maps))
+            else if (!util.CheckRoom(templateModel.Maps))
             {
                 ModelState.AddModelError("", "Invalid Room Number");
             }
