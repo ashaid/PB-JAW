@@ -122,10 +122,16 @@ def path_finder(path, new_name, building, start, dest):
         font = ImageFont.truetype(font_path, font_size)
         # draw rectangle
         draw = ImageDraw.Draw(im)
-        draw.rectangle([(building_dict[str(start)][0], building_dict[str(start)][1]),
-                        (building_dict[str(start)][2], building_dict[str(start)][3])], (0, 0, 255, 15))
-        draw.rectangle([(building_dict[str(dest)][0], building_dict[str(dest)][1]),
-                        (building_dict[str(dest)][2], building_dict[str(dest)][3])], (255, 0, 0, 15))
+        print(building_dict[str(dest)][0])
+
+        try:
+            draw.rectangle([(building_dict[str(start)][0], building_dict[str(start)][1]),
+                            (building_dict[str(start)][2], building_dict[str(start)][3])], (0, 0, 255, 15))
+            draw.rectangle([(building_dict[str(dest)][0], building_dict[str(dest)][1]),
+                            (building_dict[str(dest)][2], building_dict[str(dest)][3])], (255, 0, 0, 15))
+        except Exception as e:
+            print(e)
+
 
         # draw text, xy pixels, text, fill color, font (drawing room number on image)
         # draw.text((25, 74), "Room:" + room_number, fill='black', font=font)
@@ -237,8 +243,8 @@ def find_dict(building_dict):
         building_dict = pft_dict
     elif building_dict == "loc":
         building_dict = loc_dict
-    # elif building_dict == "pft2":
-    # building_dict = pft2_dict
+    elif building_dict == "pft2":
+        building_dict = pft2_dict
     elif building_dict == "loc2":
         building_dict = loc2_dict
     elif building_dict == "locb":
