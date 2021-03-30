@@ -179,14 +179,28 @@ namespace PB_JAW.Models
             bool done = false;
             while (!done)
             {
-                if(Maps[0].Building.Contains("-1"))
+                IntPtr gs = await StartPython();
+                details2 = FindDetails(Maps[1].Building, details2);
+                // var for map 2
+                string buildingName2 = details2[0];
+                string dictionary2 = details2[1];
+                string templatePath2 = details2[2];
+                string roomNumber2 = Maps[1].RoomNumber.ToString();
+                string name2 = buildingName2 + "_" + roomNumber2 + ".jpeg";
+
+                if (Maps[0].Building.Contains("-1"))
                 {
                     names.Add("No starting location selected");
-                    break;
+                    string newName = buildingName2 + "_" + roomNumber2 + "_to_" + roomNumber2 + ".jpeg";
+                    int start = Int32.Parse(roomNumber2);
+                    int dest = Int32.Parse(roomNumber2);
+                    PythonPath(templatePath2, newName, dictionary2, 9999, dest, gs);
+                    names.Add(newName);
+
+                    done = true;
                 }
                 else
                 {
-                    IntPtr gs = await StartPython();
 
                     details1 = FindDetails(Maps[0].Building, details1);
                     // var for map 1
@@ -195,15 +209,6 @@ namespace PB_JAW.Models
                     string templatePath1 = details1[2];
                     string roomNumber1 = Maps[0].RoomNumber.ToString();
                     string name1 = buildingName1 + "_" + roomNumber1 + ".jpeg";
-
-
-                    details2 = FindDetails(Maps[1].Building, details2);
-                    // var for map 2
-                    string buildingName2 = details2[0];
-                    string dictionary2 = details2[1];
-                    string templatePath2 = details2[2];
-                    string roomNumber2 = Maps[1].RoomNumber.ToString();
-                    string name2 = buildingName2 + "_" + roomNumber2 + ".jpeg";
 
                     // if same building and floor
                     if (dictionary1 == dictionary2)
