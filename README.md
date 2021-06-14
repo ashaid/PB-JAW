@@ -2,9 +2,7 @@
 ![pb-jaw-logo](https://user-images.githubusercontent.com/65536687/112228266-0adb5600-8bff-11eb-8b80-9d01e106414b.jpeg)
 
 ## About
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eu maximus urna. Donec faucibus justo nisl, molestie porta est fringilla id. Integer vestibulum, leo quis hendrerit maximus, sapien massa ullamcorper sem, non volutpat sem nibh vitae metus. Fusce volutpat ex vel neque vestibulum iaculis. Cras vitae lectus urna. Morbi rutrum vitae risus vitae pretium. Morbi faucibus velit nec pellentesque vestibulum. Cras dapibus vehicula elit, ac tempus felis maximus eu. Curabitur tincidunt fringilla erat sed laoreet.
-
-Vivamus eget faucibus sapien, nec ornare ex. Duis faucibus lacus erat, ut placerat ex sollicitudin nec. Sed rhoncus, dolor id rhoncus tempor, urna sem laoreet felis, nec posuere mauris ex ut arcu. Nulla efficitur enim ut quam luctus dictum. Cras sed blandit tellus, non laoreet ante. Sed ut turpis id nisl rutrum suscipit non in massa. Praesent imperdiet consequat augue, vitae fermentum elit finibus nec.
+Mapplication was developed to help all LSU students navigate campus better. We saught to solve the problem of LSU's campus being a maze to navigate and offer classroom based navigation between buildings.
 
 
 ## Installation
@@ -15,9 +13,7 @@ git clone PB-JAW
 ```
 
 ## Usage
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eu maximus urna. Donec faucibus justo nisl, molestie porta est fringilla id. Integer vestibulum, leo quis hendrerit maximus, sapien massa ullamcorper sem, non volutpat sem nibh vitae metus. Fusce volutpat ex vel neque vestibulum iaculis. Cras vitae lectus urna. Morbi rutrum vitae risus vitae pretium. Morbi faucibus velit nec pellentesque vestibulum. Cras dapibus vehicula elit, ac tempus felis maximus eu. Curabitur tincidunt fringilla erat sed laoreet.
-
-Vivamus eget faucibus sapien, nec ornare ex. Duis faucibus lacus erat, ut placerat ex sollicitudin nec. Sed rhoncus, dolor id rhoncus tempor, urna sem laoreet felis, nec posuere mauris ex ut arcu. Nulla efficitur enim ut quam luctus dictum. Cras sed blandit tellus, non laoreet ante. Sed ut turpis id nisl rutrum suscipit non in massa. Praesent imperdiet consequat augue, vitae fermentum elit finibus nec.
+Enter your starting (optional) and ending destination and the program will return a view to show you exactly the path to take.
 
 
 ## Resources
