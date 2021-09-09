@@ -9,7 +9,7 @@ Mapplication was developed to help all LSU students navigate campus better. We s
 
 Simply pull the project to github to run the project.
 ```shell
-git clone PB-JAW
+git clone https://github.com/ashaid/PB-JAW.git
 ```
 
 ## Usage
