@@ -2,7 +2,7 @@
 ![pb-jaw-logo](https://user-images.githubusercontent.com/65536687/112228266-0adb5600-8bff-11eb-8b80-9d01e106414b.jpeg)
 
 ## About
-Mapplication was developed to help all LSU students navigate campus better. We saught to solve the problem of LSU's campus being a maze to navigate and offer classroom based navigation between buildings.
+Mapplication was developed to help all LSU students navigate campus better. We sought to solve the problem of LSU's campus being a maze to navigate and offer classroom based navigation between buildings.
 
 
 ## Installation
